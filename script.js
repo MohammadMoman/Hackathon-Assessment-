@@ -427,17 +427,8 @@ function mergeSavedData(saved) {
   CONSULTANTS.forEach(consultant => {
     const savedProgress = saved?.progress?.[consultant.id] || {};
     const savedTargets = saved?.targets?.[consultant.id] || {};
-
     seed.progress[consultant.id] = { ...seed.progress[consultant.id], ...savedProgress };
-
-    for (const skillId in savedTargets) {
-      const oldTarget = savedTargets[skillId];
-      if (oldTarget && !oldTarget.current) { // It's an old, flat target
-        seed.targets[consultant.id][skillId] = { current: oldTarget, history: [] };
-      } else if (oldTarget) { // It's already in the new format or a new target
-        seed.targets[consultant.id][skillId] = { current: { ...oldTarget.current }, history: [...(oldTarget.history || [])] };
-      }
-    }
+    seed.targets[consultant.id] = { ...seed.targets[consultant.id], ...savedTargets };
   });
   return seed;
 }
@@ -513,11 +504,8 @@ function setStatuses(progressMap, ids, status) {
 function target(skillId, deadline) {
   const item = getSkillById(skillId);
   return {
-    current: {
-      text: makeSmartTarget(item, deadline),
-      deadline
-    },
-    history: []
+    text: makeSmartTarget(item, deadline),
+    deadline
   };
 }
 
@@ -949,7 +937,7 @@ function renderSkillAccordions(consultant, readOnly, role) {
 
 function renderSkillCard(item, consultantId, readOnly) {
   const status = getStatus(consultantId, item.id);
-  const existingTarget = appData.targets[consultantId][item.id]?.current; // Access the current target
+  const existingTarget = appData.targets[consultantId][item.id];
   return `
     <article class="skill-card" data-skill-id="${item.id}">
       <div class="skill-head">
@@ -1368,44 +1356,6 @@ function bindAdminTargetEvents() {
       showSmartEditor(targetItem, consultantId, skillId);
     });
   });
-
-  document.querySelectorAll(".view-history-button").forEach(button => {
-    button.addEventListener("click", () => {
-      const targetItem = button.closest(".smart-target-item");
-      const consultantId = targetItem.dataset.consultantId;
-      const skillId = targetItem.dataset.skillId;
-      showSmartTargetHistory(targetItem, consultantId, skillId);
-    });
-  });
-}
-
-function showSmartTargetHistory(card, consultantId, skillId) {
-  const targetData = appData.targets[consultantId][skillId];
-  if (!targetData || !targetData.history || targetData.history.length === 0) return;
-
-  const host = card.querySelector(".smart-host");
-  host.innerHTML = `
-    <div class="smart-target-history">
-      <h4>SMART Target History</h4>
-      <button class="ghost-button close-history-button" type="button">Close History</button>
-      ${targetData.history.map(entry => {
-        const editor = getAuthAccounts().find(acc => acc.id === entry.editorId);
-        const editorName = editor ? editor.name : "Unknown Admin";
-        const timestamp = new Date(entry.timestamp).toLocaleString();
-        return `
-          <div class="history-item">
-            <p>${entry.text}</p>
-            <span class="pill"><i class="fa-solid fa-calendar" aria-hidden="true"></i> ${entry.deadline}</span>
-            <p class="muted small">Edited by ${editorName} on ${timestamp}</p>
-          </div>
-        `;
-      }).join("")}
-    </div>
-  `;
-
-  host.querySelector(".close-history-button").addEventListener("click", () => {
-    host.innerHTML = "";
-  });
 }
 
 function renderAdminTargets() {
@@ -1429,17 +1379,12 @@ function renderAdminTargets() {
             return `
               <div class="smart-target-item" data-consultant-id="${group.person.id}" data-skill-id="${skillId}">
                 <strong>${item.name}</strong>
-                <p>${saved.current.text}</p>
-                <span class="pill"><i class="fa-solid fa-calendar" aria-hidden="true"></i> ${saved.current.deadline}</span>
+                <p>${saved.text}</p>
+                <span class="pill"><i class="fa-solid fa-calendar" aria-hidden="true"></i> ${saved.deadline}</span>
                 <button class="secondary-button edit-smart-target-button" type="button">
                   <i class="fa-solid fa-pencil" aria-hidden="true"></i> Edit SMART Target
                 </button>
                 <div class="smart-host"></div>
-                ${saved.history && saved.history.length > 0 ? `
-                  <button class="ghost-button view-history-button" type="button" data-consultant-id="${group.person.id}" data-skill-id="${skillId}">
-                    <i class="fa-solid fa-clock-rotate-left" aria-hidden="true"></i> View History (${saved.history.length})
-                  </button>
-                ` : ''}
               </div>
             `;
           }).join("")}
@@ -1575,6 +1520,433 @@ function getTeamStats() {
 function getSkillRanking(status) {
   const counts = {};
   CONSULTANTS.forEach(person => {
+    getRoleSkills(person.roleId).forEach(item => {
+      if (getStatus(person.id, item.id) === status) {
+        counts[item.id] = (counts[item.id] || 0) + 1;
+      }
+    });
+  });
+
+  return Object.entries(counts)
+    .map(([skillId, count]) => ({ ...getSkillById(skillId), count }))
+    .sort((a, b) => b.count - a.count)
+    .slice(0, 5);
+}
+
+function getDefaultDeadline() {
+  const date = new Date();
+  date.setDate(date.getDate() + 30);
+  return date.toISOString().slice(0, 10);
+}
+  const skills = getRoleSkills(effectiveRoleId);
+  const statuses = skills.map(item => getStatus(consultantId, item.id));
+  const complete = statuses.filter(status => status === "complete").length;
+  const inProgress = statuses.filter(status => status === "in-progress").length;
+  const notStarted = statuses.filter(status => status === "not-started").length;
+  const targetCount = Object.keys(appData.targets[consultantId] || {}).length;
+  return {
+    complete,
+    inProgress,
+    notStarted,
+    targetCount,
+    progressPercent: Math.round((complete / skills.length) * 100)
+  };
+}
+
+function getTeamStats() {
+  const stats = CONSULTANTS.map(person => getConsultantStats(person.id));
+  const averageProgress = Math.round(stats.reduce((sum, item) => sum + item.progressPercent, 0) / stats.length);
+  const targetCount = stats.reduce((sum, item) => sum + item.targetCount, 0);
+  return { averageProgress, targetCount };
+}
+
+function getSkillRanking(status) {
+  const counts = {};
+  CONSULTANTS.forEach(person => {
+    getRoleSkills(person.roleId).forEach(item => {
+      if (getStatus(person.id, item.id) === status) {
+        counts[item.id] = (counts[item.id] || 0) + 1;
+      }
+    });
+  });
+
+  return Object.entries(counts)
+    .map(([skillId, count]) => ({ ...getSkillById(skillId), count }))
+    .sort((a, b) => b.count - a.count)
+    .slice(0, 5);
+}
+
+function getDefaultDeadline() {
+  const date = new Date();
+  date.setDate(date.getDate() + 30);
+  return date.toISOString().slice(0, 10);
+}
+    getRoleSkills(person.roleId).forEach(item => {
+      if (getStatus(person.id, item.id) === status) {
+        counts[item.id] = (counts[item.id] || 0) + 1;
+      }
+    });
+  });
+
+  return Object.entries(counts)
+    .map(([skillId, count]) => ({ ...getSkillById(skillId), count }))
+    .sort((a, b) => b.count - a.count)
+    .slice(0, 5);
+}
+
+function getDefaultDeadline() {
+  const date = new Date();
+  date.setDate(date.getDate() + 30);
+  return date.toISOString().slice(0, 10);
+}
+  const skills = getRoleSkills(effectiveRoleId);
+  const statuses = skills.map(item => getStatus(consultantId, item.id));
+  const complete = statuses.filter(status => status === "complete").length;
+  const inProgress = statuses.filter(status => status === "in-progress").length;
+  const notStarted = statuses.filter(status => status === "not-started").length;
+  const targetCount = Object.keys(appData.targets[consultantId] || {}).length;
+  return {
+    complete,
+    inProgress,
+    notStarted,
+    targetCount,
+    progressPercent: Math.round((complete / skills.length) * 100)
+  };
+}
+
+function getTeamStats() {
+  const stats = CONSULTANTS.map(person => getConsultantStats(person.id));
+  const averageProgress = Math.round(stats.reduce((sum, item) => sum + item.progressPercent, 0) / stats.length);
+  const targetCount = stats.reduce((sum, item) => sum + item.targetCount, 0);
+  return { averageProgress, targetCount };
+}
+
+function getSkillRanking(status) {
+  const counts = {};
+  CONSULTANTS.forEach(person => {
+    getRoleSkills(person.roleId).forEach(item => {
+      if (getStatus(person.id, item.id) === status) {
+        counts[item.id] = (counts[item.id] || 0) + 1;
+      }
+    });
+  });
+
+  return Object.entries(counts)
+    .map(([skillId, count]) => ({ ...getSkillById(skillId), count }))
+    .sort((a, b) => b.count - a.count)
+    .slice(0, 5);
+}
+
+function getDefaultDeadline() {
+  const date = new Date();
+  date.setDate(date.getDate() + 30);
+  return date.toISOString().slice(0, 10);
+}
+    getRoleSkills(person.roleId).forEach(item => {
+      if (getStatus(person.id, item.id) === status) {
+        counts[item.id] = (counts[item.id] || 0) + 1;
+      }
+    });
+  });
+
+  return Object.entries(counts)
+    .map(([skillId, count]) => ({ ...getSkillById(skillId), count }))
+    .sort((a, b) => b.count - a.count)
+    .slice(0, 5);
+}
+
+function getDefaultDeadline() {
+  const date = new Date();
+  date.setDate(date.getDate() + 30);
+  return date.toISOString().slice(0, 10);
+}
+  const skills = getRoleSkills(effectiveRoleId);
+  const statuses = skills.map(item => getStatus(consultantId, item.id));
+  const complete = statuses.filter(status => status === "complete").length;
+  const inProgress = statuses.filter(status => status === "in-progress").length;
+  const notStarted = statuses.filter(status => status === "not-started").length;
+  const targetCount = Object.keys(appData.targets[consultantId] || {}).length;
+  return {
+    complete,
+    inProgress,
+    notStarted,
+    targetCount,
+    progressPercent: Math.round((complete / skills.length) * 100)
+  };
+}
+
+function getTeamStats() {
+  const stats = CONSULTANTS.map(person => getConsultantStats(person.id));
+  const averageProgress = Math.round(stats.reduce((sum, item) => sum + item.progressPercent, 0) / stats.length);
+  const targetCount = stats.reduce((sum, item) => sum + item.targetCount, 0);
+  return { averageProgress, targetCount };
+}
+
+function getSkillRanking(status) {
+  const counts = {};
+  CONSULTANTS.forEach(person => {
+    getRoleSkills(person.roleId).forEach(item => {
+      if (getStatus(person.id, item.id) === status) {
+        counts[item.id] = (counts[item.id] || 0) + 1;
+      }
+    });
+  });
+
+  return Object.entries(counts)
+    .map(([skillId, count]) => ({ ...getSkillById(skillId), count }))
+    .sort((a, b) => b.count - a.count)
+    .slice(0, 5);
+}
+
+function getDefaultDeadline() {
+  const date = new Date();
+  date.setDate(date.getDate() + 30);
+  return date.toISOString().slice(0, 10);
+}
+    getRoleSkills(person.roleId).forEach(item => {
+      if (getStatus(person.id, item.id) === status) {
+        counts[item.id] = (counts[item.id] || 0) + 1;
+      }
+    });
+  });
+
+  return Object.entries(counts)
+    .map(([skillId, count]) => ({ ...getSkillById(skillId), count }))
+    .sort((a, b) => b.count - a.count)
+    .slice(0, 5);
+}
+
+function getDefaultDeadline() {
+  const date = new Date();
+  date.setDate(date.getDate() + 30);
+  return date.toISOString().slice(0, 10);
+}
+  const skills = getRoleSkills(effectiveRoleId);
+  const statuses = skills.map(item => getStatus(consultantId, item.id));
+  const complete = statuses.filter(status => status === "complete").length;
+  const inProgress = statuses.filter(status => status === "in-progress").length;
+  const notStarted = statuses.filter(status => status === "not-started").length;
+  const targetCount = Object.keys(appData.targets[consultantId] || {}).length;
+  return {
+    complete,
+    inProgress,
+    notStarted,
+    targetCount,
+    progressPercent: Math.round((complete / skills.length) * 100)
+  };
+}
+
+function getTeamStats() {
+  const stats = CONSULTANTS.map(person => getConsultantStats(person.id));
+  const averageProgress = Math.round(stats.reduce((sum, item) => sum + item.progressPercent, 0) / stats.length);
+  const targetCount = stats.reduce((sum, item) => sum + item.targetCount, 0);
+  return { averageProgress, targetCount };
+}
+
+function getSkillRanking(status) {
+  const counts = {};
+  CONSULTANTS.forEach(person => {
+    getRoleSkills(person.roleId).forEach(item => {
+      if (getStatus(person.id, item.id) === status) {
+        counts[item.id] = (counts[item.id] || 0) + 1;
+      }
+    });
+  });
+
+  return Object.entries(counts)
+    .map(([skillId, count]) => ({ ...getSkillById(skillId), count }))
+    .sort((a, b) => b.count - a.count)
+    .slice(0, 5);
+}
+
+function getDefaultDeadline() {
+  const date = new Date();
+  date.setDate(date.getDate() + 30);
+  return date.toISOString().slice(0, 10);
+}
+    getRoleSkills(person.roleId).forEach(item => {
+      if (getStatus(person.id, item.id) === status) {
+        counts[item.id] = (counts[item.id] || 0) + 1;
+      }
+    });
+  });
+
+  return Object.entries(counts)
+    .map(([skillId, count]) => ({ ...getSkillById(skillId), count }))
+    .sort((a, b) => b.count - a.count)
+    .slice(0, 5);
+}
+
+function getDefaultDeadline() {
+  const date = new Date();
+  date.setDate(date.getDate() + 30);
+  return date.toISOString().slice(0, 10);
+}
+  const skills = getRoleSkills(effectiveRoleId);
+  const statuses = skills.map(item => getStatus(consultantId, item.id));
+  const complete = statuses.filter(status => status === "complete").length;
+  const inProgress = statuses.filter(status => status === "in-progress").length;
+  const notStarted = statuses.filter(status => status === "not-started").length;
+  const targetCount = Object.keys(appData.targets[consultantId] || {}).length;
+  return {
+    complete,
+    inProgress,
+    notStarted,
+    targetCount,
+    progressPercent: Math.round((complete / skills.length) * 100)
+  };
+}
+
+function getTeamStats() {
+  const stats = CONSULTANTS.map(person => getConsultantStats(person.id));
+  const averageProgress = Math.round(stats.reduce((sum, item) => sum + item.progressPercent, 0) / stats.length);
+  const targetCount = stats.reduce((sum, item) => sum + item.targetCount, 0);
+  return { averageProgress, targetCount };
+}
+
+function getSkillRanking(status) {
+  const counts = {};
+  CONSULTANTS.forEach(person => {
+    getRoleSkills(person.roleId).forEach(item => {
+      if (getStatus(person.id, item.id) === status) {
+        counts[item.id] = (counts[item.id] || 0) + 1;
+      }
+    });
+  });
+
+  return Object.entries(counts)
+    .map(([skillId, count]) => ({ ...getSkillById(skillId), count }))
+    .sort((a, b) => b.count - a.count)
+    .slice(0, 5);
+}
+
+function getDefaultDeadline() {
+  const date = new Date();
+  date.setDate(date.getDate() + 30);
+  return date.toISOString().slice(0, 10);
+}
+    getRoleSkills(person.roleId).forEach(item => {
+      if (getStatus(person.id, item.id) === status) {
+        counts[item.id] = (counts[item.id] || 0) + 1;
+      }
+    });
+  });
+
+  return Object.entries(counts)
+    .map(([skillId, count]) => ({ ...getSkillById(skillId), count }))
+    .sort((a, b) => b.count - a.count)
+    .slice(0, 5);
+}
+
+function getDefaultDeadline() {
+  const date = new Date();
+  date.setDate(date.getDate() + 30);
+  return date.toISOString().slice(0, 10);
+}
+  const skills = getRoleSkills(effectiveRoleId);
+  const statuses = skills.map(item => getStatus(consultantId, item.id));
+  const complete = statuses.filter(status => status === "complete").length;
+  const inProgress = statuses.filter(status => status === "in-progress").length;
+  const notStarted = statuses.filter(status => status === "not-started").length;
+  const targetCount = Object.keys(appData.targets[consultantId] || {}).length;
+  return {
+    complete,
+    inProgress,
+    notStarted,
+    targetCount,
+    progressPercent: Math.round((complete / skills.length) * 100)
+  };
+}
+
+function getTeamStats() {
+  const stats = CONSULTANTS.map(person => getConsultantStats(person.id));
+  const averageProgress = Math.round(stats.reduce((sum, item) => sum + item.progressPercent, 0) / stats.length);
+  const targetCount = stats.reduce((sum, item) => sum + item.targetCount, 0);
+  return { averageProgress, targetCount };
+}
+
+function getSkillRanking(status) {
+  const counts = {};
+  CONSULTANTS.forEach(person => {
+    getRoleSkills(person.roleId).forEach(item => {
+      if (getStatus(person.id, item.id) === status) {
+        counts[item.id] = (counts[item.id] || 0) + 1;
+      }
+    });
+  });
+
+  return Object.entries(counts)
+    .map(([skillId, count]) => ({ ...getSkillById(skillId), count }))
+    .sort((a, b) => b.count - a.count)
+    .slice(0, 5);
+}
+
+function getDefaultDeadline() {
+  const date = new Date();
+  date.setDate(date.getDate() + 30);
+  return date.toISOString().slice(0, 10);
+}
+    getRoleSkills(person.roleId).forEach(item => {
+      if (getStatus(person.id, item.id) === status) {
+        counts[item.id] = (counts[item.id] || 0) + 1;
+      }
+    });
+  });
+
+  return Object.entries(counts)
+    .map(([skillId, count]) => ({ ...getSkillById(skillId), count }))
+    .sort((a, b) => b.count - a.count)
+    .slice(0, 5);
+}
+
+function getDefaultDeadline() {
+  const date = new Date();
+  date.setDate(date.getDate() + 30);
+  return date.toISOString().slice(0, 10);
+}
+  const skills = getRoleSkills(effectiveRoleId);
+  const statuses = skills.map(item => getStatus(consultantId, item.id));
+  const complete = statuses.filter(status => status === "complete").length;
+  const inProgress = statuses.filter(status => status === "in-progress").length;
+  const notStarted = statuses.filter(status => status === "not-started").length;
+  const targetCount = Object.keys(appData.targets[consultantId] || {}).length;
+  return {
+    complete,
+    inProgress,
+    notStarted,
+    targetCount,
+    progressPercent: Math.round((complete / skills.length) * 100)
+  };
+}
+
+function getTeamStats() {
+  const stats = CONSULTANTS.map(person => getConsultantStats(person.id));
+  const averageProgress = Math.round(stats.reduce((sum, item) => sum + item.progressPercent, 0) / stats.length);
+  const targetCount = stats.reduce((sum, item) => sum + item.targetCount, 0);
+  return { averageProgress, targetCount };
+}
+
+function getSkillRanking(status) {
+  const counts = {};
+  CONSULTANTS.forEach(person => {
+    getRoleSkills(person.roleId).forEach(item => {
+      if (getStatus(person.id, item.id) === status) {
+        counts[item.id] = (counts[item.id] || 0) + 1;
+      }
+    });
+  });
+
+  return Object.entries(counts)
+    .map(([skillId, count]) => ({ ...getSkillById(skillId), count }))
+    .sort((a, b) => b.count - a.count)
+    .slice(0, 5);
+}
+
+function getDefaultDeadline() {
+  const date = new Date();
+  date.setDate(date.getDate() + 30);
+  return date.toISOString().slice(0, 10);
+}
     getRoleSkills(person.roleId).forEach(item => {
       if (getStatus(person.id, item.id) === status) {
         counts[item.id] = (counts[item.id] || 0) + 1;
