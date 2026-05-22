@@ -2,11 +2,12 @@ const STORAGE_KEY = "ten10-skills-matrix-v1";
 const UI_STORAGE_KEY = "ten10-skills-matrix-ui-v1";
 const AUTH_STORAGE_KEY = "ten10-skills-matrix-auth-v1";
 const ADMIN_TABS = ["overview", "consultants", "heatmap", "targets"];
-const ADMIN_ACCOUNT = {
-  id: "academyLead",
-  name: "Academy Lead",
-  username: "academy.lead"
-};
+const ADMIN_ACCOUNTS = [
+  { id: "matt", name: "Matt McCormick", username: "matt.mccormick" },
+  { id: "craig", name: "Craig Booth", username: "craig.booth" },
+  { id: "callum", name: "Callum Prasser", username: "callum.prasser" },
+  { id: "nuha", name: "Nuha AlShabi", username: "nuha.alshabi" }
+];
 
 const STATUS_LABELS = {
   "not-started": "Not Started",
@@ -1248,13 +1249,13 @@ function getAuthAccounts() {
       name: person.name,
       username: makeUsername(person.name)
     })),
-    {
-      key: `admin:${ADMIN_ACCOUNT.id}`,
+    ...ADMIN_ACCOUNTS.map(admin => ({
+      key: `admin:${admin.id}`,
       type: "admin",
-      id: ADMIN_ACCOUNT.id,
-      name: ADMIN_ACCOUNT.name,
-      username: ADMIN_ACCOUNT.username
-    }
+      id: admin.id,
+      name: admin.name,
+      username: admin.username
+    }))
   ];
 }
 
@@ -1278,7 +1279,7 @@ function getDefaultPassword(username) {
 
 function isValidSession(session) {
   if (!session) return false;
-  if (session.type === "admin") return session.id === ADMIN_ACCOUNT.id;
+  if (session.type === "admin") return ADMIN_ACCOUNTS.some(admin => admin.id === session.id);
   return session.type === "consultant" && Boolean(getConsultant(session.id));
 }
 
