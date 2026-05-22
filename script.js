@@ -113,24 +113,6 @@ const ROLES = {
     ]
   }
   ,
-  dataAnalyst: {
-    title: "Data Analyst",
-    summary: "Extracts insights from data to drive decision-making and business value.",
-    skills: [
-      skill("da-l1-1", "dataAnalyst", "level1", "Data Literacy", "Data types & structures", "Understand different data types, structures, and how data is stored in systems."),
-      skill("da-l1-2", "dataAnalyst", "level1", "Tools", "Excel fundamentals", "Use formulas, pivot tables, and basic charts to analyze small datasets."),
-      skill("da-l1-3", "dataAnalyst", "level1", "SQL", "SQL basics", "Write SELECT statements with WHERE, ORDER BY, and basic joins."),
-      skill("da-l1-4", "dataAnalyst", "level1", "Visualization", "Chart selection", "Choose the right chart type for the data and the question being asked."),
-      skill("da-l2-1", "dataAnalyst", "level2", "SQL", "Complex queries", "Use aggregations, subqueries, and window functions to answer complex business questions."),
-      skill("da-l2-2", "dataAnalyst", "level2", "Programming", "Python for data", "Use libraries like Pandas and Matplotlib for data manipulation and visualization."),
-      skill("da-l2-3", "dataAnalyst", "level2", "BI Tools", "Dashboard design", "Create interactive dashboards in tools like Power BI or Tableau with clear UX."),
-      skill("da-l2-4", "dataAnalyst", "level2", "Data Quality", "Data cleaning", "Identify and handle missing values, duplicates, and outliers in datasets."),
-      skill("da-l3-1", "dataAnalyst", "level3", "Statistics", "Statistical modeling", "Apply hypothesis testing and regression analysis to identify trends and patterns."),
-      skill("da-l3-2", "dataAnalyst", "level3", "Strategy", "Data storytelling", "Translate technical findings into compelling narratives for non-technical stakeholders."),
-      skill("da-l3-3", "dataAnalyst", "level3", "Engineering", "Data pipelines", "Understand ETL/ELT processes and how to automate data movement and transformation."),
-      skill("da-l3-4", "dataAnalyst", "level3", "Leadership", "Insight advocacy", "Influence business strategy by presenting data-driven recommendations to leadership.")
-    ]
-  },
   cyberSecurityAnalyst: {
     title: "Cyber Security Analyst",
     summary: "Monitors security signals, triages incidents, and reduces organisational risk.",
@@ -168,9 +150,7 @@ const CONSULTANTS = [
   { id: "niamh", name: "Niamh O'Connor", roleId: "businessAnalyst" },
   { id: "sophia", name: "Sophia Green", roleId: "devopsEngineer" },
   { id: "ethan", name: "Ethan Brooks", roleId: "devopsEngineer" },
-  { id: "daniel", name: "Daniel Hughes", roleId: "javaDeveloper" },
-  { id: "max", name: "Max Turner", roleId: "dataAnalyst" },
-  { id: "lily", name: "Lily Wong", roleId: "dataAnalyst" }
+  { id: "daniel", name: "Daniel Hughes", roleId: "javaDeveloper" }
 ];
 
 const FALLBACK_COURSES = {};
@@ -246,44 +226,6 @@ FALLBACK_COURSES["csa-l1-3"] = [
 FALLBACK_COURSES["csa-l1-4"] = [
   { title: "Tenable Training & Education", provider: "Tenable", url: "https://www.tenable.com/education" }
 ];
-
-// Data Analyst Learning Bridge links
-FALLBACK_COURSES["da-l1-1"] = [{ title: "Data Literacy Fundamentals", provider: "LinkedIn Learning", url: "https://www.linkedin.com/learning/data-fluency-exploring-and-describing-data" }];
-FALLBACK_COURSES["da-l1-2"] = [{ title: "Excel for Data Analysis", provider: "Microsoft Learn", url: "https://learn.microsoft.com/en-us/training/paths/modern-analyze-data-excel/" }];
-FALLBACK_COURSES["da-l1-3"] = [{ title: "SQL for Data Science", provider: "Coursera", url: "https://www.coursera.org/learn/sql-for-data-science" }];
-FALLBACK_COURSES["da-l1-4"] = [{ title: "Storytelling with Data", provider: "SWD", url: "https://www.storytellingwithdata.com/books" }];
-
-FALLBACK_COURSES["da-l2-1"] = [
-  { title: "Advanced SQL Tutorials", provider: "Mode Analytics", url: "https://mode.com/sql-tutorial/introduction-to-advanced-sql/" },
-  { title: "Window Functions Guide", provider: "PostgreSQL", url: "https://www.postgresql.org/docs/current/tutorial-window.html" }
-];
-FALLBACK_COURSES["da-l2-2"] = [
-  { title: "Pandas for Data Analysis", provider: "Real Python", url: "https://realpython.com/pandas-python-explore-dataset/" },
-  { title: "Python Data Science Handbook", provider: "Jake VanderPlas", url: "https://jakevdp.github.io/PythonDataScienceHandbook/" }
-];
-FALLBACK_COURSES["da-l2-3"] = [
-  { title: "Power BI Training", provider: "Microsoft", url: "https://learn.microsoft.com/en-us/training/powerplatform/power-bi" },
-  { title: "Tableau Public Training", provider: "Tableau", url: "https://public.tableau.com/en-us/s/resources" }
-];
-FALLBACK_COURSES["da-l2-4"] = [{ title: "Data Cleaning Course", provider: "Kaggle", url: "https://www.kaggle.com/learn/data-cleaning" }];
-
-FALLBACK_COURSES["da-l3-1"] = [
-  { title: "Statistics and Probability", provider: "Khan Academy", url: "https://www.khanacademy.org/math/statistics-probability" },
-  { title: "Introduction to Statistical Learning", provider: "StatLearning", url: "https://www.statlearning.com/" }
-];
-FALLBACK_COURSES["da-l3-2"] = [
-  { title: "Effective Data Storytelling", provider: "Brent Dykes", url: "https://www.effectivedatastorytelling.com/" },
-  { title: "Narrative Science", provider: "Tableau", url: "https://www.tableau.com/learn/articles/data-storytelling" }
-];
-FALLBACK_COURSES["da-l3-3"] = [
-  { title: "Data Engineering Foundations", provider: "Google Cloud", url: "https://www.cloudskillsboost.google/course_templates/3" },
-  { title: "ETL Best Practices", provider: "AWS", url: "https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-libraries.html" }
-];
-FALLBACK_COURSES["da-l3-4"] = [
-  { title: "Data Science Leadership", provider: "HBR", url: "https://hbr.org/2018/11/what-data-scientists-really-do" },
-  { title: "Leading with Data", provider: "Coursera", url: "https://www.coursera.org/learn/leading-with-data" }
-];
-
 let appData = createSeedData();
 let authData = loadAuthData();
 let activeView = "login";
@@ -298,7 +240,7 @@ let activeSession = null;
 let charts = [];
 
 const app = document.getElementById("app");
-const backToLoginButton = document.getElementById("backToLogin");
+const logoutButton = document.getElementById("logoutButton");
 const resetDemoButton = document.getElementById("resetDemo");
 const themeToggleButton = document.getElementById("themeToggle");
 const brandHome = document.getElementById("brandHome");
@@ -319,7 +261,7 @@ function skill(id, roleId, level, category, name, description) {
 }
 
 function bindShellActions() {
-  backToLoginButton.addEventListener("click", logout);
+  logoutButton.addEventListener("click", logout);
   brandHome.addEventListener("click", event => {
     event.preventDefault();
     logout();
@@ -444,12 +386,6 @@ function createSeedData() {
   setStatuses(progress.daniel, ["jd-l1-1", "jd-l1-3"], "complete");
   setStatuses(progress.daniel, ["jd-l1-2", "jd-l2-1"], "in-progress");
 
-  setStatuses(progress.max, ["da-l1-1", "da-l1-2", "da-l1-3"], "complete");
-  setStatuses(progress.max, ["da-l1-4", "da-l2-1"], "in-progress");
-  targets.max["da-l2-1"] = target("da-l2-1", "2026-08-10");
-
-  setStatuses(progress.lily, ["da-l1-1", "da-l1-4"], "complete");
-
   return { progress, targets };
 }
 
@@ -540,7 +476,7 @@ function renderLogin(message = "") {
   adminDrilldownId = null;
   setView("login");
   clearCharts();
-  backToLoginButton.classList.add("hide");
+  logoutButton.classList.add("hide");
   app.innerHTML = `
     <section class="hero">
       <div class="hero-panel">
@@ -637,7 +573,7 @@ function getActiveRoleId(consultant) {
 function renderPasswordChange(account, message = "") {
   setView("login");
   clearCharts();
-  backToLoginButton.classList.add("hide");
+  logoutButton.classList.add("hide");
   app.innerHTML = `
     <section class="hero">
       <div class="hero-panel">
@@ -727,7 +663,7 @@ function renderRoleSelection() {
 
   setView("role");
   clearCharts();
-  backToLoginButton.classList.remove("hide");
+  logoutButton.classList.remove("hide");
   activeConsultantId = activeSession.id;
   const consultant = getConsultant(activeConsultantId);
   const currentRoleId = getActiveRoleId(consultant);
@@ -790,7 +726,7 @@ function renderConsultantDashboard(consultantId, options = {}) {
   const role = ROLES[roleId] || ROLES[consultant.roleId];
   const stats = getConsultantStats(consultant.id, roleId);
   setView(readOnly ? "admin" : "consultant");
-  backToLoginButton.classList.remove("hide");
+  logoutButton.classList.remove("hide");
 
   app.innerHTML = `
     <section>
@@ -859,6 +795,7 @@ function renderStats(stats) {
 }
 
 function renderSkillAccordions(consultant, readOnly, role) {
+  let previousLevelComplete = true;
   return `
     <div class="accordion">
       ${LEVELS.map((level, index) => {
@@ -866,17 +803,25 @@ function renderSkillAccordions(consultant, readOnly, role) {
         const completeCount = levelSkills.filter(item => getStatus(consultant.id, item.id) === "complete").length;
         const levelProgress = Math.round((completeCount / levelSkills.length) * 100) || 0;
 
+        const isLocked = !readOnly && !previousLevelComplete;
+        previousLevelComplete = (levelProgress === 100);
+
         return `
-        <div class="accordion-item ${index === 0 ? "open" : ""}">
-          <button class="accordion-trigger" type="button" aria-expanded="${index === 0 ? "true" : "false"}">
+        <div class="accordion-item ${index === 0 ? "open" : ""} ${isLocked ? "locked-level" : ""}">
+          <button class="accordion-trigger" type="button" aria-expanded="${index === 0 ? "true" : "false"}" ${isLocked ? "disabled" : ""}>
             <div style="display: flex; align-items: center; justify-content: space-between; flex: 1; margin-right: 1.5rem;">
-              <span>${level.label}</span>
+              <span style="display: flex; align-items: center; gap: 8px;">
+                ${isLocked ? '<i class="fa-solid fa-lock" aria-hidden="true"></i>' : ""}
+                ${level.label}
+              </span>
               <div style="width: 140px;">${renderProgressBar(levelProgress, "8px", true)}</div>
             </div>
             <i class="fa-solid fa-chevron-down" aria-hidden="true"></i>
           </button>
           <div class="accordion-content">
-            ${levelSkills.map(item => renderSkillCard(item, consultant.id, readOnly)).join("")}
+            ${isLocked 
+              ? `<p class="muted" style="padding: 1.5rem; text-align: center;">Complete the previous level to 100% to unlock these skills.</p>` 
+              : levelSkills.map(item => renderSkillCard(item, consultant.id, readOnly)).join("")}
           </div>
         </div>
       `}).join("")}
@@ -1006,7 +951,7 @@ function renderAdmin() {
   }
 
   setView("admin");
-  backToLoginButton.classList.remove("hide");
+  logoutButton.classList.remove("hide");
   if (adminDrilldownId) {
     renderConsultantDashboard(adminDrilldownId, { readOnly: true, roleId: getConsultant(adminDrilldownId).roleId });
     return;
