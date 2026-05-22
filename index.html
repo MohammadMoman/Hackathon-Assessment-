@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ten10 Skills Matrix</title>
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar" aria-label="Application header">
+      <a class="brand" href="#" id="brandHome" aria-label="Back to login">
+        <span class="brand-mark">10</span>
+        <span>
+          <strong>Ten10</strong>
+          <small>Skills Matrix</small>
+        </span>
+      </a>
+      <div class="topbar-actions">
+        <button class="ghost-button" id="themeToggle" type="button">
+          <i class="fa-solid fa-circle-half-stroke" aria-hidden="true"></i>
+          <span>Theme</span>
+        </button>
+        <button class="ghost-button" id="resetDemo" type="button">
+          <i class="fa-solid fa-rotate-left" aria-hidden="true"></i>
+          <span>Reset demo</span>
+        </button>
+        <button class="primary-button" id="backToLogin" type="button">
+          <i class="fa-solid fa-right-from-bracket" aria-hidden="true"></i>
+          <span>Back to login</span>
+        </button>
+      </div>
+    </header>
+
+    <main id="app" class="main-content" tabindex="-1"></main>
+
+    <footer class="footer-note">
+      <span>Course data loaded from mock JSON with built-in fallback.</span>
+      <span>Static prototype for the Ten10 hackathon brief.</span>
+    </footer>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
