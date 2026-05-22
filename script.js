@@ -149,6 +149,7 @@ let appData = createSeedData();
 let authData = loadAuthData();
 let activeView = "login";
 let activeConsultantId = CONSULTANTS[0].id;
+let selectedRoleId = null;
 let selectedAdminTab = "overview";
 let adminDrilldownId = null;
 let comparisonRoleId = getDefaultComparisonRoleId();
@@ -354,6 +355,7 @@ function loadSavedUiState() {
     const views = ["login", "role", "consultant", "admin"];
     if (views.includes(state.activeView)) activeView = state.activeView;
     if (getConsultant(state.activeConsultantId)) activeConsultantId = state.activeConsultantId;
+    if (state.selectedRoleId && Object.keys(ROLES).includes(state.selectedRoleId)) selectedRoleId = state.selectedRoleId;
     if (ADMIN_TABS.includes(state.selectedAdminTab)) selectedAdminTab = state.selectedAdminTab;
     adminDrilldownId = getConsultant(state.adminDrilldownId) ? state.adminDrilldownId : null;
     if (getComparableRoleIds().includes(state.comparisonRoleId)) comparisonRoleId = state.comparisonRoleId;
@@ -369,6 +371,7 @@ function saveUiState() {
   localStorage.setItem(UI_STORAGE_KEY, JSON.stringify({
     activeView,
     activeConsultantId,
+    selectedRoleId,
     selectedAdminTab,
     adminDrilldownId,
     comparisonRoleId,
@@ -480,6 +483,11 @@ function handleLogin(type, usernameValue, passwordValue) {
   completeLogin(account);
 }
 
+function getActiveRoleId(consultant) {
+  if (selectedRoleId && ROLES[selectedRoleId]) return selectedRoleId;
+  return consultant.roleId;
+}
+
 function renderPasswordChange(account, message = "") {
   setView("login");
   clearCharts();
@@ -560,6 +568,7 @@ function completeLogin(account) {
   }
 
   activeConsultantId = account.id;
+  selectedRoleId = account.roleId;
   saveUiState();
   renderRoleSelection();
 }
@@ -575,38 +584,46 @@ function renderRoleSelection() {
   backToLoginButton.classList.remove("hide");
   activeConsultantId = activeSession.id;
   const consultant = getConsultant(activeConsultantId);
-  const role = ROLES[consultant.roleId];
+  const currentRoleId = getActiveRoleId(consultant);
   app.innerHTML = `
     <section>
       <div class="view-header">
         <div>
           <p class="eyebrow">Consultant role selection</p>
           <h2>${consultant.name}</h2>
-          <p>Each consultant tracks one assigned role for this demo.</p>
+          <p>Choose a role from the list below to track progress against the skills you want to build.</p>
         </div>
       </div>
       <div class="role-selection">
-        <div class="section-panel role-card">
-          <div>
-            <span class="pill"><i class="fa-solid fa-id-badge" aria-hidden="true"></i> Assigned role</span>
-            <h2>${role.title}</h2>
-            <p>${role.summary}</p>
+        ${Object.entries(ROLES).map(([roleId, roleItem]) => `
+          <div class="section-panel role-card ${roleId === currentRoleId ? "selected" : ""}">
+            <div>
+              <span class="pill">${roleId === consultant.roleId ? "Assigned role" : "Optional role"}</span>
+              <h3>${roleItem.title}</h3>
+              <p>${roleItem.summary}</p>
+              <ul class="role-summary-list">
+                ${LEVELS.map(level => `
+                  <li>${level.label}: ${roleItem.skills.filter(item => item.level === level.key).length} skills</li>
+                `).join("")}
+              </ul>
+            </div>
+            <button class="primary-button" data-role-select="${roleId}" type="button">
+              <i class="fa-solid fa-chevron-right" aria-hidden="true"></i>
+              ${roleId === currentRoleId ? "Continue with this role" : "Choose this role"}
+            </button>
           </div>
-          <button class="primary-button" id="openMatrix" type="button">
-            <i class="fa-solid fa-table-cells-large" aria-hidden="true"></i>
-            Open Skills Matrix
-          </button>
-        </div>
-        <div class="section-panel">
-          <h3>Roadmap preview</h3>
-          ${LEVELS.map(level => `
-            <p><strong>${level.label}</strong><br><span class="muted">${role.skills.filter(item => item.level === level.key).length} skills mapped for ${role.title}</span></p>
-          `).join("")}
-        </div>
+        `).join("")}
       </div>
     </section>
   `;
-  document.getElementById("openMatrix").addEventListener("click", () => renderConsultantDashboard(activeConsultantId));
+
+  document.querySelectorAll("[data-role-select]").forEach(button => {
+    button.addEventListener("click", () => {
+      selectedRoleId = button.dataset.roleSelect;
+      saveUiState();
+      renderConsultantDashboard(consultant.id, { roleId: selectedRoleId });
+    });
+  });
 }
 
 function renderConsultantDashboard(consultantId, options = {}) {
@@ -623,9 +640,10 @@ function renderConsultantDashboard(consultantId, options = {}) {
 
   const consultant = getConsultant(consultantId);
   if (!readOnly) activeConsultantId = consultant.id;
+  const roleId = options.roleId || (readOnly ? consultant.roleId : getActiveRoleId(consultant));
+  const role = ROLES[roleId] || ROLES[consultant.roleId];
+  const stats = getConsultantStats(consultant.id, roleId);
   setView(readOnly ? "admin" : "consultant");
-  const role = ROLES[consultant.roleId];
-  const stats = getConsultantStats(consultant.id);
   backToLoginButton.classList.remove("hide");
 
   app.innerHTML = `
@@ -636,7 +654,9 @@ function renderConsultantDashboard(consultantId, options = {}) {
           <h2>${consultant.name} - ${role.title}</h2>
           <p>${role.summary}</p>
         </div>
-        ${readOnly ? `<button class="secondary-button" id="backToAdmin" type="button"><i class="fa-solid fa-arrow-left" aria-hidden="true"></i> Back to admin</button>` : ""}
+        <div class="view-actions">
+          ${!readOnly ? `<button class="secondary-button" id="changeRole" type="button"><i class="fa-solid fa-arrow-left" aria-hidden="true"></i> Change role</button>` : `    <button class="secondary-button" id="backToAdmin" type="button"><i class="fa-solid fa-arrow-left" aria-hidden="true"></i> Back to admin</button>`}
+        </div>
       </div>
       ${readOnly ? `<div class="read-only-banner">Read-only academy lead view. Admin cannot edit consultant progress.</div>` : ""}
       ${renderStats(stats)}
@@ -647,7 +667,7 @@ function renderConsultantDashboard(consultantId, options = {}) {
             <p>Track progress, open SMART targets, and use Learning Bridge resources.</p>
           </div>
         </div>
-        ${renderSkillAccordions(consultant, readOnly)}
+        ${renderSkillAccordions(consultant, readOnly, role)}
       </div>
     </section>
   `;
@@ -658,6 +678,8 @@ function renderConsultantDashboard(consultantId, options = {}) {
       saveUiState();
       renderAdmin();
     });
+  } else {
+    document.getElementById("changeRole").addEventListener("click", () => renderRoleSelection());
   }
 
   bindAccordionEvents();
@@ -679,8 +701,7 @@ function renderStats(stats) {
   `;
 }
 
-function renderSkillAccordions(consultant, readOnly) {
-  const role = ROLES[consultant.roleId];
+function renderSkillAccordions(consultant, readOnly, role) {
   return `
     <div class="accordion">
       ${LEVELS.map((level, index) => `
@@ -822,7 +843,7 @@ function renderAdmin() {
   setView("admin");
   backToLoginButton.classList.remove("hide");
   if (adminDrilldownId) {
-    renderConsultantDashboard(adminDrilldownId, { readOnly: true });
+    renderConsultantDashboard(adminDrilldownId, { readOnly: true, roleId: getConsultant(adminDrilldownId).roleId });
     return;
   }
   app.innerHTML = `
@@ -1209,9 +1230,10 @@ function getResources(skillId) {
   return courseData[skillId] || FALLBACK_COURSES[skillId] || [];
 }
 
-function getConsultantStats(consultantId) {
+function getConsultantStats(consultantId, roleId) {
   const consultant = getConsultant(consultantId);
-  const skills = getRoleSkills(consultant.roleId);
+  const effectiveRoleId = roleId && ROLES[roleId] ? roleId : consultant.roleId;
+  const skills = getRoleSkills(effectiveRoleId);
   const statuses = skills.map(item => getStatus(consultantId, item.id));
   const complete = statuses.filter(status => status === "complete").length;
   const inProgress = statuses.filter(status => status === "in-progress").length;
