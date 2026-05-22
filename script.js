@@ -23,7 +23,7 @@ const LEVELS = [
 
 const ROLES = {
   manualTester: {
-    title: "Junior Manual Tester",
+    title: "Software Developer",
     summary: "Validates user journeys, documents defects, and protects release quality.",
     skills: [
       skill("mt-l1-1", "manualTester", "level1", "Test Fundamentals", "Testing mindset", "Understand why testing matters, what risk means, and how defects affect users."),
