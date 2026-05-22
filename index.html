@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ten10 Skills Matrix</title>
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header class="topbar">
+        <div class="container topbar-inner">
+            <div class="brand" id="brand-logo">
+                <div class="logo-mark">T10</div>
+                <span class="logo-text">Skills<strong>Matrix</strong></span>
+            </div>
+            <nav class="nav-controls">
+                <button id="btn-back-login" class="btn btn-ghost hidden">
+                    <i class="fas fa-sign-out-alt"></i> Back to Login
+                </button>
+                <button id="btn-reset-demo" class="btn btn-ghost" title="Reset all data">
+                    <i class="fas fa-undo"></i>
+                </button>
+                <button id="btn-theme-toggle" class="btn btn-ghost">
+                    <i class="fas fa-moon"></i>
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <main id="app" class="main-content" tabindex="-1"></main>
+
+    <footer class="footer">
+        <div class="container">
+            <p>Course data loaded from mock JSON with built-in fallback. &copy; 2024 Ten10 Consultancy.</p>
+        </div>
+    </footer>
+
+    <!-- Chart.js for Admin Analytics -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
