@@ -235,6 +235,7 @@ let selectedAdminTab = "overview";
 let adminDrilldownId = null;
 let comparisonRoleId = getDefaultComparisonRoleId();
 let comparisonConsultantIds = getDefaultComparisonPair(comparisonRoleId);
+let consultantSearchQuery = "";
 let activeSession = null;
 let charts = [];
 
@@ -973,6 +974,7 @@ function renderAdmin() {
   document.querySelectorAll("[data-tab]").forEach(button => {
     button.addEventListener("click", () => {
       selectedAdminTab = button.dataset.tab;
+      consultantSearchQuery = "";
       adminDrilldownId = null;
       renderAdmin();
     });
@@ -1012,7 +1014,17 @@ function renderAdminOverview() {
 }
 
 function renderConsultantTable() {
+  const filtered = CONSULTANTS.filter(person => 
+    person.name.toLowerCase().includes(consultantSearchQuery.toLowerCase())
+  );
+
   return `
+    <div class="search-container" style="margin-bottom: 1.5rem;">
+      <div class="form-field" style="max-width: 400px;">
+        <label for="consultantSearch">Search consultants</label>
+        <input type="text" id="consultantSearch" placeholder="Filter by name..." value="${consultantSearchQuery}" autocomplete="off">
+      </div>
+    </div>
     <div class="table-wrap">
       <table>
         <thead>
@@ -1021,7 +1033,7 @@ function renderConsultantTable() {
           </tr>
         </thead>
         <tbody>
-          ${CONSULTANTS.map(person => {
+          ${filtered.map(person => {
             const stats = getConsultantStats(person.id);
             return `
               <tr>
@@ -1037,6 +1049,7 @@ function renderConsultantTable() {
               </tr>
             `;
           }).join("")}
+          ${filtered.length === 0 ? '<tr><td colspan="5" style="text-align: center; padding: 2rem;"><p class="muted">No consultants found matching your search.</p></td></tr>' : ''}
         </tbody>
       </table>
     </div>
@@ -1044,6 +1057,21 @@ function renderConsultantTable() {
 }
 
 function bindConsultantTable() {
+  const searchInput = document.getElementById("consultantSearch");
+  if (searchInput) {
+    // Maintain focus and cursor position if user was typing
+    if (consultantSearchQuery !== "") {
+      searchInput.focus();
+      const len = searchInput.value.length;
+      searchInput.setSelectionRange(len, len);
+    }
+
+    searchInput.addEventListener("input", (e) => {
+      consultantSearchQuery = e.target.value;
+      renderAdminTab();
+    });
+  }
+
   document.querySelectorAll("[data-view-consultant]").forEach(element => {
     element.addEventListener("click", (e) => {
       if (element.tagName === "A") e.preventDefault();
