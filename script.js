@@ -1016,7 +1016,7 @@ function renderConsultantTable() {
       <table>
         <thead>
           <tr>
-            <th>Name</th><th>Role</th><th>Progress</th><th>Complete</th><th>In Progress</th><th>Action</th>
+            <th>Name</th><th>Role</th><th>Progress</th><th>Complete</th><th>In Progress</th>
           </tr>
         </thead>
         <tbody>
@@ -1024,12 +1024,15 @@ function renderConsultantTable() {
             const stats = getConsultantStats(person.id);
             return `
               <tr>
-                <td>${person.name}</td>
+                <td>
+                  <a href="#" class="consultant-link" data-view-consultant="${person.id}">
+                    ${person.name}
+                  </a>
+                </td>
                 <td>${ROLES[person.roleId].title}</td>
                 <td>${stats.progressPercent}%</td>
                 <td>${stats.complete}</td>
                 <td>${stats.inProgress}</td>
-                <td><button class="secondary-button" data-view-consultant="${person.id}" type="button">View matrix</button></td>
               </tr>
             `;
           }).join("")}
@@ -1040,9 +1043,10 @@ function renderConsultantTable() {
 }
 
 function bindConsultantTable() {
-  document.querySelectorAll("[data-view-consultant]").forEach(button => {
-    button.addEventListener("click", () => {
-      adminDrilldownId = button.dataset.viewConsultant;
+  document.querySelectorAll("[data-view-consultant]").forEach(element => {
+    element.addEventListener("click", (e) => {
+      if (element.tagName === "A") e.preventDefault();
+      adminDrilldownId = element.dataset.viewConsultant;
       saveUiState();
       renderAdmin();
     });
