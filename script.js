@@ -131,6 +131,24 @@ const ROLES = {
       skill("da-l3-4", "dataAnalyst", "level3", "Leadership", "Insight advocacy", "Influence business strategy by presenting data-driven recommendations to leadership.")
     ]
   },
+  dataEngineer: {
+    title: "Data Engineer",
+    summary: "Builds and maintains the systems that allow data to be collected, stored, and analyzed.",
+    skills: [
+      skill("de-l1-1", "dataEngineer", "level1", "SQL", "SQL for Engineering", "Write complex queries using CTEs, window functions, and performance-tuned joins."),
+      skill("de-l1-2", "dataEngineer", "level1", "Programming", "Python for Engineering", "Develop modular Python scripts for data extraction and automation."),
+      skill("de-l1-3", "dataEngineer", "level1", "Architecture", "Warehousing concepts", "Understand OLTP vs OLAP, Star Schemas, and Fact/Dimension tables."),
+      skill("de-l1-4", "dataEngineer", "level1", "Tools", "Git for Data", "Use version control to manage SQL scripts and pipeline code collaboratively."),
+      skill("de-l2-1", "dataEngineer", "level2", "Orchestration", "Pipeline automation", "Schedule and manage workflows using tools like Apache Airflow or dbt."),
+      skill("de-l2-2", "dataEngineer", "level2", "Big Data", "Distributed processing", "Process large-scale datasets using Spark or Databricks efficiently."),
+      skill("de-l2-3", "dataEngineer", "level2", "Data Modeling", "Dimensional modeling", "Design robust schemas using Kimball or Data Vault methodologies."),
+      skill("de-l2-4", "dataEngineer", "level2", "Platforms", "Cloud data stacks", "Configure and optimize cloud data warehouses like Snowflake, BigQuery, or Redshift."),
+      skill("de-l3-1", "dataEngineer", "level3", "Streaming", "Real-time processing", "Design and maintain streaming architectures using Kafka or Flink."),
+      skill("de-l3-2", "dataEngineer", "level3", "DevOps", "Data Infrastructure", "Manage data infrastructure as code using Terraform or CloudFormation."),
+      skill("de-l3-3", "dataEngineer", "level3", "Quality", "Data observability", "Implement automated testing and monitoring for data health and reliability."),
+      skill("de-l3-4", "dataEngineer", "level3", "Strategy", "Data Architecture", "Define architectural patterns like Data Mesh or Lakehouse for organizational scalability.")
+    ]
+  },
   cyberSecurityAnalyst: {
     title: "Cyber Security Analyst",
     summary: "Monitors security signals, triages incidents, and reduces organisational risk.",
@@ -170,7 +188,9 @@ const CONSULTANTS = [
   { id: "ethan", name: "Ethan Brooks", roleId: "devopsEngineer" },
   { id: "daniel", name: "Daniel Hughes", roleId: "javaDeveloper" },
   { id: "max", name: "Max Turner", roleId: "dataAnalyst" },
-  { id: "lily", name: "Lily Wong", roleId: "dataAnalyst" }
+  { id: "lily", name: "Lily Wong", roleId: "dataAnalyst" },
+  { id: "zoe", name: "Zoe Chen", roleId: "dataEngineer" },
+  { id: "leo", name: "Leo Garcia", roleId: "dataEngineer" }
 ];
 
 const FALLBACK_COURSES = {};
@@ -283,6 +303,22 @@ FALLBACK_COURSES["da-l3-4"] = [
   { title: "Data Science Leadership", provider: "HBR", url: "https://hbr.org/2018/11/what-data-scientists-really-do" },
   { title: "Leading with Data", provider: "Coursera", url: "https://www.coursera.org/learn/leading-with-data" }
 ];
+
+// Data Engineer Learning Bridge links
+FALLBACK_COURSES["de-l1-1"] = [{ title: "Advanced SQL for Data Engineers", provider: "LinkedIn Learning", url: "https://www.linkedin.com/learning/advanced-sql-for-data-scientists" }];
+FALLBACK_COURSES["de-l1-2"] = [{ title: "Python for Data Engineering", provider: "DataCamp", url: "https://www.datacamp.com/tracks/data-engineer-with-python" }];
+FALLBACK_COURSES["de-l1-3"] = [{ title: "Data Warehouse Fundamentals", provider: "Coursera", url: "https://www.coursera.org/learn/data-warehousing" }];
+FALLBACK_COURSES["de-l1-4"] = [{ title: "Git for Data Teams", provider: "GitLab", url: "https://about.gitlab.com/topics/version-control/" }];
+
+FALLBACK_COURSES["de-l2-1"] = [{ title: "Modern Data Orchestration with Airflow", provider: "Astronomer", url: "https://www.astronomer.io/academy/" }];
+FALLBACK_COURSES["de-l2-2"] = [{ title: "Spark and Python for Big Data", provider: "Udemy", url: "https://www.udemy.com/course/spark-and-python-for-big-data-with-pyspark/" }];
+FALLBACK_COURSES["de-l2-3"] = [{ title: "Data Modeling for Data Warehouses", provider: "Kimball Group", url: "https://www.kimballgroup.com/data-warehouse-business-intelligence-resources/" }];
+FALLBACK_COURSES["de-l2-4"] = [{ title: "Snowflake Cloud Data Platform", provider: "Snowflake", url: "https://quickstarts.snowflake.com/" }];
+
+FALLBACK_COURSES["de-l3-1"] = [{ title: "Kafka: The Definitive Guide", provider: "Confluent", url: "https://www.confluent.io/resources/kafka-the-definitive-guide/" }];
+FALLBACK_COURSES["de-l3-2"] = [{ title: "Infrastructure as Code for Data", provider: "Terraform", url: "https://registry.terraform.io/modules/terraform-google-modules/sql-db/google/latest" }];
+FALLBACK_COURSES["de-l3-3"] = [{ title: "Introduction to Data Quality", provider: "Great Expectations", url: "https://docs.greatexpectations.io/docs/tutorials/getting_started/tutorial_overview" }];
+FALLBACK_COURSES["de-l3-4"] = [{ title: "Data Mesh Principles", provider: "Martin Fowler", url: "https://martinfowler.com/articles/data-mesh-principles.html" }];
 
 let appData = createSeedData();
 let authData = loadAuthData();
@@ -449,6 +485,12 @@ function createSeedData() {
   targets.max["da-l2-1"] = target("da-l2-1", "2026-08-10");
 
   setStatuses(progress.lily, ["da-l1-1", "da-l1-4"], "complete");
+
+  setStatuses(progress.zoe, ["de-l1-1", "de-l1-2", "de-l1-3"], "complete");
+  setStatuses(progress.zoe, ["de-l2-1", "de-l2-4"], "in-progress");
+  targets.zoe["de-l2-1"] = target("de-l2-1", "2026-09-15");
+
+  setStatuses(progress.leo, ["de-l1-1", "de-l1-4"], "complete");
 
   return { progress, targets };
 }
