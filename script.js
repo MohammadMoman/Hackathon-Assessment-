@@ -334,7 +334,7 @@ let activeSession = null;
 let charts = [];
 
 const app = document.getElementById("app");
-const backToLoginButton = document.getElementById("backToLogin");
+const logoutButton = document.getElementById("logoutButton");
 const resetDemoButton = document.getElementById("resetDemo");
 const themeToggleButton = document.getElementById("themeToggle");
 const brandHome = document.getElementById("brandHome");
@@ -355,7 +355,7 @@ function skill(id, roleId, level, category, name, description) {
 }
 
 function bindShellActions() {
-  backToLoginButton.addEventListener("click", logout);
+  logoutButton.addEventListener("click", logout);
   brandHome.addEventListener("click", event => {
     event.preventDefault();
     logout();
@@ -582,7 +582,7 @@ function renderLogin(message = "") {
   adminDrilldownId = null;
   setView("login");
   clearCharts();
-  backToLoginButton.classList.add("hide");
+  logoutButton.classList.add("hide");
   app.innerHTML = `
     <section class="hero">
       <div class="hero-panel">
@@ -679,7 +679,7 @@ function getActiveRoleId(consultant) {
 function renderPasswordChange(account, message = "") {
   setView("login");
   clearCharts();
-  backToLoginButton.classList.add("hide");
+  logoutButton.classList.add("hide");
   app.innerHTML = `
     <section class="hero">
       <div class="hero-panel">
@@ -769,7 +769,7 @@ function renderRoleSelection() {
 
   setView("role");
   clearCharts();
-  backToLoginButton.classList.remove("hide");
+  logoutButton.classList.remove("hide");
   activeConsultantId = activeSession.id;
   const consultant = getConsultant(activeConsultantId);
   const currentRoleId = getActiveRoleId(consultant);
@@ -832,7 +832,7 @@ function renderConsultantDashboard(consultantId, options = {}) {
   const role = ROLES[roleId] || ROLES[consultant.roleId];
   const stats = getConsultantStats(consultant.id, roleId);
   setView(readOnly ? "admin" : "consultant");
-  backToLoginButton.classList.remove("hide");
+  logoutButton.classList.remove("hide");
 
   app.innerHTML = `
     <section>
@@ -901,6 +901,7 @@ function renderStats(stats) {
 }
 
 function renderSkillAccordions(consultant, readOnly, role) {
+  let previousLevelComplete = true;
   return `
     <div class="accordion">
       ${LEVELS.map((level, index) => {
@@ -908,17 +909,25 @@ function renderSkillAccordions(consultant, readOnly, role) {
         const completeCount = levelSkills.filter(item => getStatus(consultant.id, item.id) === "complete").length;
         const levelProgress = Math.round((completeCount / levelSkills.length) * 100) || 0;
 
+        const isLocked = !readOnly && !previousLevelComplete;
+        previousLevelComplete = (levelProgress === 100);
+
         return `
-        <div class="accordion-item ${index === 0 ? "open" : ""}">
-          <button class="accordion-trigger" type="button" aria-expanded="${index === 0 ? "true" : "false"}">
+        <div class="accordion-item ${index === 0 ? "open" : ""} ${isLocked ? "locked-level" : ""}">
+          <button class="accordion-trigger" type="button" aria-expanded="${index === 0 ? "true" : "false"}" ${isLocked ? "disabled" : ""}>
             <div style="display: flex; align-items: center; justify-content: space-between; flex: 1; margin-right: 1.5rem;">
-              <span>${level.label}</span>
+              <span style="display: flex; align-items: center; gap: 8px;">
+                ${isLocked ? '<i class="fa-solid fa-lock" aria-hidden="true"></i>' : ""}
+                ${level.label}
+              </span>
               <div style="width: 140px;">${renderProgressBar(levelProgress, "8px", true)}</div>
             </div>
             <i class="fa-solid fa-chevron-down" aria-hidden="true"></i>
           </button>
           <div class="accordion-content">
-            ${levelSkills.map(item => renderSkillCard(item, consultant.id, readOnly)).join("")}
+            ${isLocked 
+              ? `<p class="muted" style="padding: 1.5rem; text-align: center;">Complete the previous level to 100% to unlock these skills.</p>` 
+              : levelSkills.map(item => renderSkillCard(item, consultant.id, readOnly)).join("")}
           </div>
         </div>
       `}).join("")}
@@ -1048,7 +1057,7 @@ function renderAdmin() {
   }
 
   setView("admin");
-  backToLoginButton.classList.remove("hide");
+  logoutButton.classList.remove("hide");
   if (adminDrilldownId) {
     renderConsultantDashboard(adminDrilldownId, { readOnly: true, roleId: getConsultant(adminDrilldownId).roleId });
     return;
