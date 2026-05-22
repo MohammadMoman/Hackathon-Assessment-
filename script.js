@@ -23,7 +23,7 @@ const LEVELS = [
 
 const ROLES = {
   manualTester: {
-    title: "Junior Manual Tester",
+    title: "Software Developer",
     summary: "Validates user journeys, documents defects, and protects release quality.",
     skills: [
       skill("mt-l1-1", "manualTester", "level1", "Test Fundamentals", "Testing mindset", "Understand why testing matters, what risk means, and how defects affect users."),
@@ -113,6 +113,42 @@ const ROLES = {
     ]
   }
   ,
+  dataAnalyst: {
+    title: "Data Analyst",
+    summary: "Extracts insights from data to drive decision-making and business value.",
+    skills: [
+      skill("da-l1-1", "dataAnalyst", "level1", "Data Literacy", "Data types & structures", "Understand different data types, structures, and how data is stored in systems."),
+      skill("da-l1-2", "dataAnalyst", "level1", "Tools", "Excel fundamentals", "Use formulas, pivot tables, and basic charts to analyze small datasets."),
+      skill("da-l1-3", "dataAnalyst", "level1", "SQL", "SQL basics", "Write SELECT statements with WHERE, ORDER BY, and basic joins."),
+      skill("da-l1-4", "dataAnalyst", "level1", "Visualization", "Chart selection", "Choose the right chart type for the data and the question being asked."),
+      skill("da-l2-1", "dataAnalyst", "level2", "SQL", "Complex queries", "Use aggregations, subqueries, and window functions to answer complex business questions."),
+      skill("da-l2-2", "dataAnalyst", "level2", "Programming", "Python for data", "Use libraries like Pandas and Matplotlib for data manipulation and visualization."),
+      skill("da-l2-3", "dataAnalyst", "level2", "BI Tools", "Dashboard design", "Create interactive dashboards in tools like Power BI or Tableau with clear UX."),
+      skill("da-l2-4", "dataAnalyst", "level2", "Data Quality", "Data cleaning", "Identify and handle missing values, duplicates, and outliers in datasets."),
+      skill("da-l3-1", "dataAnalyst", "level3", "Statistics", "Statistical modeling", "Apply hypothesis testing and regression analysis to identify trends and patterns."),
+      skill("da-l3-2", "dataAnalyst", "level3", "Strategy", "Data storytelling", "Translate technical findings into compelling narratives for non-technical stakeholders."),
+      skill("da-l3-3", "dataAnalyst", "level3", "Engineering", "Data pipelines", "Understand ETL/ELT processes and how to automate data movement and transformation."),
+      skill("da-l3-4", "dataAnalyst", "level3", "Leadership", "Insight advocacy", "Influence business strategy by presenting data-driven recommendations to leadership.")
+    ]
+  },
+  dataEngineer: {
+    title: "Data Engineer",
+    summary: "Builds and maintains the systems that allow data to be collected, stored, and analyzed.",
+    skills: [
+      skill("de-l1-1", "dataEngineer", "level1", "SQL", "SQL for Engineering", "Write complex queries using CTEs, window functions, and performance-tuned joins."),
+      skill("de-l1-2", "dataEngineer", "level1", "Programming", "Python for Engineering", "Develop modular Python scripts for data extraction and automation."),
+      skill("de-l1-3", "dataEngineer", "level1", "Architecture", "Warehousing concepts", "Understand OLTP vs OLAP, Star Schemas, and Fact/Dimension tables."),
+      skill("de-l1-4", "dataEngineer", "level1", "Tools", "Git for Data", "Use version control to manage SQL scripts and pipeline code collaboratively."),
+      skill("de-l2-1", "dataEngineer", "level2", "Orchestration", "Pipeline automation", "Schedule and manage workflows using tools like Apache Airflow or dbt."),
+      skill("de-l2-2", "dataEngineer", "level2", "Big Data", "Distributed processing", "Process large-scale datasets using Spark or Databricks efficiently."),
+      skill("de-l2-3", "dataEngineer", "level2", "Data Modeling", "Dimensional modeling", "Design robust schemas using Kimball or Data Vault methodologies."),
+      skill("de-l2-4", "dataEngineer", "level2", "Platforms", "Cloud data stacks", "Configure and optimize cloud data warehouses like Snowflake, BigQuery, or Redshift."),
+      skill("de-l3-1", "dataEngineer", "level3", "Streaming", "Real-time processing", "Design and maintain streaming architectures using Kafka or Flink."),
+      skill("de-l3-2", "dataEngineer", "level3", "DevOps", "Data Infrastructure", "Manage data infrastructure as code using Terraform or CloudFormation."),
+      skill("de-l3-3", "dataEngineer", "level3", "Quality", "Data observability", "Implement automated testing and monitoring for data health and reliability."),
+      skill("de-l3-4", "dataEngineer", "level3", "Strategy", "Data Architecture", "Define architectural patterns like Data Mesh or Lakehouse for organizational scalability.")
+    ]
+  },
   cyberSecurityAnalyst: {
     title: "Cyber Security Analyst",
     summary: "Monitors security signals, triages incidents, and reduces organisational risk.",
@@ -150,7 +186,11 @@ const CONSULTANTS = [
   { id: "niamh", name: "Niamh O'Connor", roleId: "businessAnalyst" },
   { id: "sophia", name: "Sophia Green", roleId: "devopsEngineer" },
   { id: "ethan", name: "Ethan Brooks", roleId: "devopsEngineer" },
-  { id: "daniel", name: "Daniel Hughes", roleId: "javaDeveloper" }
+  { id: "daniel", name: "Daniel Hughes", roleId: "javaDeveloper" },
+  { id: "max", name: "Max Turner", roleId: "dataAnalyst" },
+  { id: "lily", name: "Lily Wong", roleId: "dataAnalyst" },
+  { id: "zoe", name: "Zoe Chen", roleId: "dataEngineer" },
+  { id: "leo", name: "Leo Garcia", roleId: "dataEngineer" }
 ];
 
 const FALLBACK_COURSES = {};
@@ -226,6 +266,60 @@ FALLBACK_COURSES["csa-l1-3"] = [
 FALLBACK_COURSES["csa-l1-4"] = [
   { title: "Tenable Training & Education", provider: "Tenable", url: "https://www.tenable.com/education" }
 ];
+
+// Data Analyst Learning Bridge links
+FALLBACK_COURSES["da-l1-1"] = [{ title: "Data Literacy Fundamentals", provider: "LinkedIn Learning", url: "https://www.linkedin.com/learning/data-fluency-exploring-and-describing-data" }];
+FALLBACK_COURSES["da-l1-2"] = [{ title: "Excel for Data Analysis", provider: "Microsoft Learn", url: "https://learn.microsoft.com/en-us/training/paths/modern-analyze-data-excel/" }];
+FALLBACK_COURSES["da-l1-3"] = [{ title: "SQL for Data Science", provider: "Coursera", url: "https://www.coursera.org/learn/sql-for-data-science" }];
+FALLBACK_COURSES["da-l1-4"] = [{ title: "Storytelling with Data", provider: "SWD", url: "https://www.storytellingwithdata.com/books" }];
+
+FALLBACK_COURSES["da-l2-1"] = [
+  { title: "Advanced SQL Tutorials", provider: "Mode Analytics", url: "https://mode.com/sql-tutorial/introduction-to-advanced-sql/" },
+  { title: "Window Functions Guide", provider: "PostgreSQL", url: "https://www.postgresql.org/docs/current/tutorial-window.html" }
+];
+FALLBACK_COURSES["da-l2-2"] = [
+  { title: "Pandas for Data Analysis", provider: "Real Python", url: "https://realpython.com/pandas-python-explore-dataset/" },
+  { title: "Python Data Science Handbook", provider: "Jake VanderPlas", url: "https://jakevdp.github.io/PythonDataScienceHandbook/" }
+];
+FALLBACK_COURSES["da-l2-3"] = [
+  { title: "Power BI Training", provider: "Microsoft", url: "https://learn.microsoft.com/en-us/training/powerplatform/power-bi" },
+  { title: "Tableau Public Training", provider: "Tableau", url: "https://public.tableau.com/en-us/s/resources" }
+];
+FALLBACK_COURSES["da-l2-4"] = [{ title: "Data Cleaning Course", provider: "Kaggle", url: "https://www.kaggle.com/learn/data-cleaning" }];
+
+FALLBACK_COURSES["da-l3-1"] = [
+  { title: "Statistics and Probability", provider: "Khan Academy", url: "https://www.khanacademy.org/math/statistics-probability" },
+  { title: "Introduction to Statistical Learning", provider: "StatLearning", url: "https://www.statlearning.com/" }
+];
+FALLBACK_COURSES["da-l3-2"] = [
+  { title: "Effective Data Storytelling", provider: "Brent Dykes", url: "https://www.effectivedatastorytelling.com/" },
+  { title: "Narrative Science", provider: "Tableau", url: "https://www.tableau.com/learn/articles/data-storytelling" }
+];
+FALLBACK_COURSES["da-l3-3"] = [
+  { title: "Data Engineering Foundations", provider: "Google Cloud", url: "https://www.cloudskillsboost.google/course_templates/3" },
+  { title: "ETL Best Practices", provider: "AWS", url: "https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-libraries.html" }
+];
+FALLBACK_COURSES["da-l3-4"] = [
+  { title: "Data Science Leadership", provider: "HBR", url: "https://hbr.org/2018/11/what-data-scientists-really-do" },
+  { title: "Leading with Data", provider: "Coursera", url: "https://www.coursera.org/learn/leading-with-data" }
+];
+
+// Data Engineer Learning Bridge links
+FALLBACK_COURSES["de-l1-1"] = [{ title: "Advanced SQL for Data Engineers", provider: "LinkedIn Learning", url: "https://www.linkedin.com/learning/advanced-sql-for-data-scientists" }];
+FALLBACK_COURSES["de-l1-2"] = [{ title: "Python for Data Engineering", provider: "DataCamp", url: "https://www.datacamp.com/tracks/data-engineer-with-python" }];
+FALLBACK_COURSES["de-l1-3"] = [{ title: "Data Warehouse Fundamentals", provider: "Coursera", url: "https://www.coursera.org/learn/data-warehousing" }];
+FALLBACK_COURSES["de-l1-4"] = [{ title: "Git for Data Teams", provider: "GitLab", url: "https://about.gitlab.com/topics/version-control/" }];
+
+FALLBACK_COURSES["de-l2-1"] = [{ title: "Modern Data Orchestration with Airflow", provider: "Astronomer", url: "https://www.astronomer.io/academy/" }];
+FALLBACK_COURSES["de-l2-2"] = [{ title: "Spark and Python for Big Data", provider: "Udemy", url: "https://www.udemy.com/course/spark-and-python-for-big-data-with-pyspark/" }];
+FALLBACK_COURSES["de-l2-3"] = [{ title: "Data Modeling for Data Warehouses", provider: "Kimball Group", url: "https://www.kimballgroup.com/data-warehouse-business-intelligence-resources/" }];
+FALLBACK_COURSES["de-l2-4"] = [{ title: "Snowflake Cloud Data Platform", provider: "Snowflake", url: "https://quickstarts.snowflake.com/" }];
+
+FALLBACK_COURSES["de-l3-1"] = [{ title: "Kafka: The Definitive Guide", provider: "Confluent", url: "https://www.confluent.io/resources/kafka-the-definitive-guide/" }];
+FALLBACK_COURSES["de-l3-2"] = [{ title: "Infrastructure as Code for Data", provider: "Terraform", url: "https://registry.terraform.io/modules/terraform-google-modules/sql-db/google/latest" }];
+FALLBACK_COURSES["de-l3-3"] = [{ title: "Introduction to Data Quality", provider: "Great Expectations", url: "https://docs.greatexpectations.io/docs/tutorials/getting_started/tutorial_overview" }];
+FALLBACK_COURSES["de-l3-4"] = [{ title: "Data Mesh Principles", provider: "Martin Fowler", url: "https://martinfowler.com/articles/data-mesh-principles.html" }];
+
 let appData = createSeedData();
 let authData = loadAuthData();
 let activeView = "login";
@@ -394,6 +488,18 @@ function createSeedData() {
 
   setStatuses(progress.daniel, ["jd-l1-1", "jd-l1-3"], "complete");
   setStatuses(progress.daniel, ["jd-l1-2", "jd-l2-1"], "in-progress");
+
+  setStatuses(progress.max, ["da-l1-1", "da-l1-2", "da-l1-3"], "complete");
+  setStatuses(progress.max, ["da-l1-4", "da-l2-1"], "in-progress");
+  targets.max["da-l2-1"] = target("da-l2-1", "2026-08-10");
+
+  setStatuses(progress.lily, ["da-l1-1", "da-l1-4"], "complete");
+
+  setStatuses(progress.zoe, ["de-l1-1", "de-l1-2", "de-l1-3"], "complete");
+  setStatuses(progress.zoe, ["de-l2-1", "de-l2-4"], "in-progress");
+  targets.zoe["de-l2-1"] = target("de-l2-1", "2026-09-15");
+
+  setStatuses(progress.leo, ["de-l1-1", "de-l1-4"], "complete");
 
   return { progress, targets };
 }
