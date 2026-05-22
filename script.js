@@ -111,6 +111,32 @@ const ROLES = {
       skill("do-l3-4", "devopsEngineer", "level3", "Coaching", "DevOps culture", "Help teams improve collaboration across development, testing, and operations.")
     ]
   }
+  ,
+  cyberSecurityAnalyst: {
+    title: "Cyber Security Analyst",
+    summary: "Monitors security signals, triages incidents, and reduces organisational risk.",
+    skills: [
+      // Level 1
+      skill("csa-l1-1", "cyberSecurityAnalyst", "level1", "Networking", "Foundational networking", "Understand basic networking concepts: IP, DNS, ports, routing, and common protocols."),
+      skill("csa-l1-2", "cyberSecurityAnalyst", "level1", "Identity", "Identity & access management", "Explain authentication vs authorisation and apply basic IAM controls."),
+      skill("csa-l1-3", "cyberSecurityAnalyst", "level1", "Incident", "Basic incident reporting", "Capture clear incident summaries, evidence, impact, and next steps for stakeholders."),
+      skill("csa-l1-4", "cyberSecurityAnalyst", "level1", "Vulnerability", "Vulnerability scanning", "Run simple scans and interpret basic findings from common tools."),
+
+      // Level 2
+      skill("csa-l2-1", "cyberSecurityAnalyst", "level2", "Investigation", "Advanced incident investigation & threat hunting", "Perform advanced incident investigations and hypothesis-driven threat hunting."),
+      skill("csa-l2-2", "cyberSecurityAnalyst", "level2", "Cloud", "Cloud security implementation", "Apply security controls and hardening in cloud environments."),
+      skill("csa-l2-3", "cyberSecurityAnalyst", "level2", "Vulnerability", "Vulnerability management & remediation", "Run vulnerability scans, interpret results, and coordinate remediation."),
+      skill("csa-l2-4", "cyberSecurityAnalyst", "level2", "Automation", "Security automation", "Automate repetitive security tasks to reduce manual effort and improve response time."),
+      skill("csa-l2-5", "cyberSecurityAnalyst", "level2", "Governance", "Compliance & framework knowledge", "Apply common security frameworks and compliance requirements to controls and processes."),
+
+      // Level 3
+      skill("csa-l3-1", "cyberSecurityAnalyst", "level3", "Architecture", "Security architecture & design", "Design secure architectures and justify security trade-offs for systems and services."),
+      skill("csa-l3-2", "cyberSecurityAnalyst", "level3", "Forensics", "Crisis management & forensic leadership", "Lead forensic investigations and manage crisis communication and response."),
+      skill("csa-l3-3", "cyberSecurityAnalyst", "level3", "Threat", "Threat modelling & risk assessment", "Conduct threat modelling and risk assessments to inform mitigations."),
+      skill("csa-l3-4", "cyberSecurityAnalyst", "level3", "DevSecOps", "DevSecOps integration", "Integrate security into CI/CD and development practices to shift-left security."),
+      skill("csa-l3-5", "cyberSecurityAnalyst", "level3", "Leadership", "Mentorship & stakeholder management", "Mentor junior practitioners and manage stakeholder communications for security initiatives.")
+    ]
+  }
 };
 
 const CONSULTANTS = [
@@ -145,6 +171,60 @@ Object.values(ROLES).forEach(role => {
 });
 
 let courseData = FALLBACK_COURSES;
+
+// Add specific Learning Bridge resources for Cyber Security Analyst skills
+FALLBACK_COURSES["csa-l2-1"] = [
+  { title: "Advanced Incident Investigation & Threat Hunting - Chris Sanders", provider: "Chris Sanders", url: "https://chrissanders.org/training/" },
+  { title: "Blue Team Labs Online", provider: "Cyber Defenders", url: "https://cyberdefenders.org/blue-team-labs/" }
+];
+// add additional monitoring resources
+FALLBACK_COURSES["csa-l2-1"].push(
+  { title: "BlueTeamLabs Online (alternate)", provider: "Blue Team Labs", url: "https://blueteamlabs.online/" },
+  { title: "LetsDefend", provider: "LetsDefend", url: "https://letsdefend.io/" }
+);
+FALLBACK_COURSES["csa-l2-2"] = [
+  { title: "Cloud Security Training", provider: "Cloud Lee", url: "https://learn.cloudlee.io/" },
+  { title: "Cloud Native & Security Writing", provider: "Brendan Cantrill", url: "https://cantrill.io/" }
+];
+FALLBACK_COURSES["csa-l2-3"] = [
+  { title: "Web Security Academy", provider: "PortSwigger", url: "https://portswigger.net/web-security" }
+];
+FALLBACK_COURSES["csa-l2-4"] = [
+  { title: "Automate the Boring Stuff", provider: "Al Sweigart", url: "https://automatetheboringstuff.com/" }
+];
+FALLBACK_COURSES["csa-l2-5"] = [
+  { title: "NIST Cybersecurity Framework", provider: "NIST", url: "https://www.nist.gov/cyberframework" }
+];
+
+FALLBACK_COURSES["csa-l3-1"] = [
+  { title: "CISSP Certification", provider: "(ISC)²", url: "https://www.isc2.org/Certifications/CISSP" }
+];
+FALLBACK_COURSES["csa-l3-2"] = [
+  { title: "Defensible Security Architecture", provider: "SANS", url: "https://www.sans.org/cyber-security-courses/defensible-security-architecture-and-engineering" }
+];
+FALLBACK_COURSES["csa-l3-3"] = [
+  { title: "Threat Modeling: Designing for Security", provider: "Adam Shostack", url: "https://shostack.org/books/threat-modeling-book" }
+];
+FALLBACK_COURSES["csa-l3-4"] = [
+  { title: "Practical DevSecOps", provider: "Practical DevSecOps", url: "https://www.practical-devsecops.com/" }
+];
+FALLBACK_COURSES["csa-l3-5"] = [
+  { title: "Stakeholder Management Courses", provider: "Coursera", url: "https://www.coursera.org/courses?query=stakeholder%20management" },
+  { title: "Professional Certificate in Stakeholder Engagement", provider: "BCS", url: "https://www.bcs.org/qualifications-and-certifications/certifications-for-professionals/business-analysis/professional-certificate-in-stakeholder-engagement/" }
+];
+// Stage 1 Learning Bridge links for Cyber Security Analyst
+FALLBACK_COURSES["csa-l1-1"] = [
+  { title: "Foundational Networking (YouTube)", provider: "YouTube", url: "https://www.youtube.com/watch?v=xmd-jHaqcH8" }
+];
+FALLBACK_COURSES["csa-l1-2"] = [
+  { title: "Security, Compliance, and Identity Fundamentals", provider: "Microsoft Learn", url: "https://learn.microsoft.com/en-us/credentials/certifications/security-compliance-and-identity-fundamentals/?practice-assessment-type=certification" }
+];
+FALLBACK_COURSES["csa-l1-3"] = [
+  { title: "SOC Level 1 Path", provider: "TryHackMe", url: "https://tryhackme.com/path/outline/soclevel1" }
+];
+FALLBACK_COURSES["csa-l1-4"] = [
+  { title: "Tenable Training & Education", provider: "Tenable", url: "https://www.tenable.com/education" }
+];
 let appData = createSeedData();
 let authData = loadAuthData();
 let activeView = "login";
