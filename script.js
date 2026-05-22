@@ -766,13 +766,24 @@ function renderConsultantDashboard(consultantId, options = {}) {
   if (!readOnly) bindSkillEvents(consultant);
 }
 
+function renderProgressBar(percent, height = "12px", showLabel = false) {
+  return `
+    <div style="display: flex; align-items: center; gap: 12px; width: 100%;">
+      ${showLabel ? `<span style="font-size: 0.85rem; font-weight: 600; min-width: 35px; text-align: right;">${percent}%</span>` : ""}
+      <div class="progress-track" style="height: ${height}; flex: 1; margin-bottom: 0;">
+        <div class="progress-fill" style="width:${percent}%"></div>
+      </div>
+    </div>
+  `;
+}
+
 function renderStats(stats) {
   return `
     <div class="stats-grid" aria-label="Progress summary">
       <div class="stat-card">
         <span>Overall progress</span>
         <strong>${stats.progressPercent}%</strong>
-        <div class="progress-track"><div class="progress-fill" style="width:${stats.progressPercent}%"></div></div>
+        ${renderProgressBar(stats.progressPercent)}
       </div>
       <div class="stat-card"><span>Completed</span><strong>${stats.complete}</strong></div>
       <div class="stat-card"><span>In progress</span><strong>${stats.inProgress}</strong></div>
@@ -784,17 +795,25 @@ function renderStats(stats) {
 function renderSkillAccordions(consultant, readOnly, role) {
   return `
     <div class="accordion">
-      ${LEVELS.map((level, index) => `
+      ${LEVELS.map((level, index) => {
+        const levelSkills = role.skills.filter(item => item.level === level.key);
+        const completeCount = levelSkills.filter(item => getStatus(consultant.id, item.id) === "complete").length;
+        const levelProgress = Math.round((completeCount / levelSkills.length) * 100) || 0;
+
+        return `
         <div class="accordion-item ${index === 0 ? "open" : ""}">
           <button class="accordion-trigger" type="button" aria-expanded="${index === 0 ? "true" : "false"}">
-            <span>${level.label}</span>
+            <div style="display: flex; align-items: center; justify-content: space-between; flex: 1; margin-right: 1.5rem;">
+              <span>${level.label}</span>
+              <div style="width: 140px;">${renderProgressBar(levelProgress, "8px", true)}</div>
+            </div>
             <i class="fa-solid fa-chevron-down" aria-hidden="true"></i>
           </button>
           <div class="accordion-content">
-            ${role.skills.filter(item => item.level === level.key).map(item => renderSkillCard(item, consultant.id, readOnly)).join("")}
+            ${levelSkills.map(item => renderSkillCard(item, consultant.id, readOnly)).join("")}
           </div>
         </div>
-      `).join("")}
+      `}).join("")}
     </div>
   `;
 }
