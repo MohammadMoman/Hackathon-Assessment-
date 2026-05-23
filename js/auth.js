@@ -11,14 +11,14 @@ function renderLogin(message = "") {
         <div class="hero-copy">
           <p class="eyebrow">Ten10 Academy Skills Platform</p>
           <h1>Skills Matrix</h1>
-          <p>Sign in as a consultant or academy lead to track role progress, skill gaps, SMART goals, and team capability.</p>
-          <div style="margin-top: 2rem; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 1.5rem;">
-            <p style="font-weight: 600; margin-bottom: 1rem; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.05em; opacity: 0.8;">Platform Highlights</p>
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; font-size: 0.85rem; opacity: 0.9;">
-              <div style="display: flex; align-items: flex-start; gap: 8px;"><i class="fa-solid fa-graduation-cap" style="margin-top: 3px;"></i> <span>Curated Learning Bridge resources mapped to every skill.</span></div>
-              <div style="display: flex; align-items: flex-start; gap: 8px;"><i class="fa-solid fa-route" style="margin-top: 3px;"></i> <span>Clear progression from Foundational to Expert levels.</span></div>
-              <div style="display: flex; align-items: flex-start; gap: 8px;"><i class="fa-solid fa-fire-flame-curved" style="margin-top: 3px;"></i> <span>Identify team capability gaps with real-time heatmaps.</span></div>
-              <div style="display: flex; align-items: flex-start; gap: 8px;"><i class="fa-solid fa-crosshairs" style="margin-top: 3px;"></i> <span>Generate and track SMART targets to accelerate growth.</span></div>
+          <p style="font-size: 1.15rem; line-height: 1.6; opacity: 0.9;">Sign in as a consultant or academy lead to track role progress, skill gaps, SMART goals, and team capability.</p>
+          <div style="margin-top: 3rem; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 2.5rem;">
+            <p style="font-weight: 600; margin-bottom: 1.5rem; font-size: 1.1rem; text-transform: uppercase; letter-spacing: 0.1em; opacity: 0.85;">Platform Highlights</p>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem 1.5rem; font-size: 1.05rem; opacity: 0.95; line-height: 1.5;">
+              <div style="display: flex; align-items: flex-start; gap: 12px;"><i class="fa-solid fa-graduation-cap" style="margin-top: 4px; font-size: 1.2rem;"></i> <span>Curated Learning Bridge resources mapped to every skill.</span></div>
+              <div style="display: flex; align-items: flex-start; gap: 12px;"><i class="fa-solid fa-route" style="margin-top: 4px; font-size: 1.2rem;"></i> <span>Clear progression from Foundational to Expert levels.</span></div>
+              <div style="display: flex; align-items: flex-start; gap: 12px;"><i class="fa-solid fa-fire-flame-curved" style="margin-top: 4px; font-size: 1.2rem;"></i> <span>Identify team capability gaps with real-time heatmaps.</span></div>
+              <div style="display: flex; align-items: flex-start; gap: 12px;"><i class="fa-solid fa-crosshairs" style="margin-top: 4px; font-size: 1.2rem;"></i> <span>Generate and track SMART targets to accelerate growth.</span></div>
             </div>
           </div>
         </div>
