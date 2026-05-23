@@ -5,18 +5,16 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Ten10 Skills Matrix</title>
   <link rel="preconnect" href="https://cdnjs.cloudflare.com">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"></noscript>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
   <div class="app-shell">
     <header class="topbar" aria-label="Application header">
       <a class="brand" href="#" id="brandHome" aria-label="Back to login">
-        <span class="brand-mark">10</span>
-        <span>
-          <strong>Ten10</strong>
-          <small>Skills Matrix</small>
-        </span>
+        <span class="ten10-logo ten10-logo-header" aria-hidden="true"><span>Ten</span><strong>10</strong></span>
+        <span class="brand-product">Skills Matrix</span>
       </a>
       <div class="topbar-actions">
         <button class="ghost-button" id="themeToggle" type="button">
@@ -37,12 +35,34 @@
     <main id="app" class="main-content" tabindex="-1"></main>
 
     <footer class="footer-note">
-      <span>Course data loaded from mock JSON with built-in fallback.</span>
-      <span>Static prototype for the Ten10 hackathon brief.</span>
+      <div class="footer-contact">
+        <strong>London</strong>
+        <a href="tel:+442071007794">+44 (0)207 100 7794</a>
+      </div>
+      <div class="footer-legal">
+        <span class="ten10-logo ten10-logo-footer" aria-hidden="true"><span>Ten</span><strong>10</strong></span>
+        <span>&copy; Ten10 2026. All rights reserved.</span>
+      </div>
     </footer>
   </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script>
+    window.addEventListener("error", function (event) {
+      var host = document.getElementById("app");
+      if (!host || host.children.length) return;
+      var source = event.filename ? event.filename.split('/').pop() + ':' + event.lineno : window.__currentScript || 'unknown script';
+      host.innerHTML = '<section class="section-panel"><h2>Unable to start Skills Matrix</h2><p class="muted">' +
+        event.message + ' (' + source + ')</p></section>';
+    });
+  </script>
+  <script src="js/data.js"></script>
+  <script src="js/utils.js"></script>
+  <script src="js/storage.js"></script>
+  <script src="js/shell.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/consultant.js"></script>
+  <script src="js/admin.js"></script>
   <script src="script.js"></script>
+  <script async src="https://cdn.jsdelivr.net/npm/chart.js" onload="if (typeof drawHeatCharts === 'function' && selectedAdminTab === 'heatmap') drawHeatCharts();"></script>
 </body>
 </html>

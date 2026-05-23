@@ -1,0 +1,155 @@
+/* Application shell, Ten10 brand treatment, header, footer, and page frame. */
+.app-shell {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.topbar {
+  width: min(1200px, calc(100% - 48px));
+  margin: 24px auto 0;
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid rgba(222, 217, 234, 0.95);
+  border-top: 4px solid var(--brand);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(16px);
+}
+
+body.dark .topbar {
+  background: rgba(27, 23, 41, 0.8);
+}
+
+body.dark .footer-note {
+  background: var(--surface);
+}
+
+body.dark .footer-contact a,
+body.dark .footer-legal,
+body.dark .rank-count {
+  color: var(--text);
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 18px;
+  color: var(--text);
+  text-decoration: none;
+}
+
+.ten10-logo {
+  position: relative;
+  display: inline-flex;
+  align-items: baseline;
+  padding-bottom: 9px;
+  color: #5f646d;
+  font-weight: 700;
+  line-height: 0.88;
+  letter-spacing: 0;
+}
+
+.ten10-logo::before,
+.ten10-logo::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  height: 7px;
+  background: currentColor;
+}
+
+.ten10-logo::before {
+  left: 0;
+  width: 66%;
+}
+
+.ten10-logo::after {
+  right: 0;
+  width: 41%;
+  background: var(--brand);
+  transform: skewX(-36deg);
+  transform-origin: bottom left;
+}
+
+.ten10-logo strong {
+  color: var(--brand);
+  font-weight: 700;
+}
+
+.ten10-logo-header {
+  font-size: 3rem;
+}
+
+.brand-product {
+  display: block;
+  color: var(--muted);
+  font-weight: 700;
+  padding-left: 16px;
+  border-left: 1px solid var(--line);
+}
+
+.topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.main-content {
+  width: min(1200px, calc(100% - 48px));
+  margin: 28px auto;
+  flex: 1;
+}
+
+.main-content:focus {
+  outline: none;
+}
+
+.footer-note {
+  width: 100%;
+  margin: 24px auto 0;
+  padding: 72px max(24px, calc((100vw - 1200px) / 2)) 30px;
+  display: grid;
+  gap: 34px;
+  color: var(--muted);
+  font-size: 1rem;
+  background: var(--surface);
+  border-top: 4px solid var(--brand);
+  box-shadow: 0 -12px 30px rgba(35, 21, 67, 0.04);
+}
+
+.footer-contact {
+  display: grid;
+  gap: 12px;
+}
+
+.footer-contact strong {
+  color: var(--brand);
+  font-size: 1.8rem;
+  font-weight: 500;
+}
+
+.footer-contact a {
+  color: #44546a;
+  font-size: 1.75rem;
+  text-decoration: none;
+}
+
+.footer-legal {
+  display: flex;
+  align-items: flex-end;
+  gap: 18px;
+  color: #44546a;
+  font-size: 1rem;
+}
+
+.ten10-logo-footer {
+  font-size: 2.1rem;
+  padding-bottom: 7px;
+}

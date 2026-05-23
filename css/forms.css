@@ -1,0 +1,208 @@
+/* Login screen, form controls, reusable panels, and button styles. */
+.hero {
+  min-height: 580px;
+  display: grid;
+  grid-template-columns: 1.05fr 0.95fr;
+  gap: 28px;
+  align-items: stretch;
+}
+
+.hero-panel {
+  padding: 44px;
+  color: #fff;
+  border-radius: var(--radius);
+  background:
+    linear-gradient(135deg, rgba(28, 11, 67, 0.94), rgba(75, 21, 140, 0.86)),
+    linear-gradient(45deg, var(--brand), var(--brand-3));
+  box-shadow: var(--shadow);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  overflow: hidden;
+  position: relative;
+}
+
+.hero-panel::after {
+  content: "";
+  position: absolute;
+  inset: auto -60px -80px auto;
+  width: 280px;
+  height: 280px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  transform: rotate(18deg);
+}
+
+.hero-copy {
+  position: relative;
+  z-index: 1;
+}
+
+.eyebrow {
+  margin: 0 0 16px;
+  color: rgba(255, 255, 255, 0.8);
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: 0.8rem;
+}
+
+h1 {
+  max-width: 720px;
+  margin-bottom: 16px;
+  font-size: clamp(2.7rem, 6vw, 5.6rem);
+  line-height: 0.94;
+}
+
+.hero-copy p {
+  max-width: 620px;
+  color: rgba(255, 255, 255, 0.78);
+  font-size: 1.1rem;
+  line-height: 1.65;
+}
+
+.hero-metrics {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+.metric-tile {
+  padding: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: var(--radius);
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.metric-tile strong {
+  display: block;
+  font-size: 1.7rem;
+}
+
+.login-panel,
+.section-panel,
+.skill-card,
+.stat-card,
+.table-wrap,
+.target-card,
+.heat-card {
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+  box-shadow: var(--shadow);
+}
+
+.login-panel {
+  padding: 28px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 22px;
+}
+
+.login-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.login-choice {
+  padding: 20px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface-soft);
+}
+
+.login-choice form {
+  display: grid;
+  gap: 0;
+}
+
+.login-choice .primary-button {
+  width: 100%;
+  min-height: 64px;
+}
+
+.register-link-button {
+  width: 100%;
+  margin-top: 12px;
+}
+
+.register-panel form {
+  display: grid;
+}
+
+.form-field {
+  display: grid;
+  gap: 8px;
+  margin: 14px 0;
+}
+
+.form-field label {
+  font-weight: 700;
+  font-size: 0.92rem;
+}
+
+select,
+textarea,
+input[type="text"],
+input[type="password"],
+input[type="date"] {
+  width: 100%;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  padding: 11px 12px;
+  color: var(--text);
+  background: var(--surface);
+}
+
+.form-message {
+  margin: 14px 0;
+  padding: 12px 14px;
+  border-radius: var(--radius);
+  font-weight: 700;
+}
+
+.form-message.error {
+  color: var(--danger);
+  background: rgba(183, 53, 84, 0.1);
+  border: 1px solid rgba(183, 53, 84, 0.25);
+}
+
+textarea {
+  min-height: 120px;
+  resize: vertical;
+}
+
+.primary-button,
+.secondary-button,
+.ghost-button,
+.status-button,
+.tab-button {
+  min-height: 42px;
+  border-radius: 7px;
+  border: 1px solid transparent;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 14px;
+  font-weight: 700;
+}
+
+.primary-button {
+  background: linear-gradient(135deg, var(--brand), var(--brand-2));
+  color: #fff;
+}
+
+.secondary-button {
+  color: var(--brand);
+  background: var(--surface-soft);
+  border-color: var(--line);
+}
+
+.ghost-button {
+  color: var(--text);
+  background: transparent;
+  border-color: var(--line);
+}
