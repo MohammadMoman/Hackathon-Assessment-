@@ -12,6 +12,15 @@ function renderLogin(message = "") {
           <p class="eyebrow">Ten10 Academy Skills Platform</p>
           <h1>Skills Matrix</h1>
           <p>Sign in as a consultant or academy lead to track role progress, skill gaps, SMART goals, and team capability.</p>
+          <div style="margin-top: 2rem; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 1.5rem;">
+            <p style="font-weight: 600; margin-bottom: 1rem; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.05em; opacity: 0.8;">Platform Highlights</p>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; font-size: 0.85rem; opacity: 0.9;">
+              <div style="display: flex; align-items: flex-start; gap: 8px;"><i class="fa-solid fa-graduation-cap" style="margin-top: 3px;"></i> <span>Curated Learning Bridge resources mapped to every skill.</span></div>
+              <div style="display: flex; align-items: flex-start; gap: 8px;"><i class="fa-solid fa-route" style="margin-top: 3px;"></i> <span>Clear progression from Foundational to Expert levels.</span></div>
+              <div style="display: flex; align-items: flex-start; gap: 8px;"><i class="fa-solid fa-fire-flame-curved" style="margin-top: 3px;"></i> <span>Identify team capability gaps with real-time heatmaps.</span></div>
+              <div style="display: flex; align-items: flex-start; gap: 8px;"><i class="fa-solid fa-crosshairs" style="margin-top: 3px;"></i> <span>Generate and track SMART targets to accelerate growth.</span></div>
+            </div>
+          </div>
         </div>
         <div class="hero-metrics" aria-label="Demo platform metrics">
           <div class="metric-tile"><strong>${Object.keys(ROLES).length}</strong><span>Roles</span></div>
@@ -23,7 +32,7 @@ function renderLogin(message = "") {
         <div>
           <p class="eyebrow">Demo login</p>
           <h2>Sign in</h2>
-          <p class="muted">Consultants can register a new account, while academy leads use their admin credentials.</p>
+          <p class="muted">Enter your assigned consultant or academy lead credentials.</p>
         </div>
         ${message ? `<div class="form-message error">${message}</div>` : ""}
         <div class="login-grid">
@@ -43,10 +52,6 @@ function renderLogin(message = "") {
                 Sign in as Consultant
               </button>
             </form>
-            <button class="ghost-button register-link-button" id="showRegister" type="button">
-              <i class="fa-solid fa-user-plus" aria-hidden="true"></i>
-              Register as a consultant
-            </button>
           </div>
           <div class="login-choice">
             <h3><i class="fa-solid fa-chart-line" aria-hidden="true"></i> Academy Lead</h3>
@@ -66,6 +71,9 @@ function renderLogin(message = "") {
             </form>
           </div>
         </div>
+        <div style="margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid rgba(0,0,0,0.05); font-size: 0.85rem; color: #666; line-height: 1.5;">
+          <p><strong><i class="fa-solid fa-circle-info" aria-hidden="true"></i> Demo Environment:</strong> This platform stores all progress, password changes, and SMART targets locally within your browser's storage. No data is sent to a server, ensuring total privacy during your evaluation.</p>
+        </div>
       </div>
     </section>
   `;
@@ -78,13 +86,13 @@ function renderLogin(message = "") {
     event.preventDefault();
     handleLogin("admin", document.getElementById("adminUsername").value, document.getElementById("adminPassword").value);
   });
-  document.getElementById("showRegister").addEventListener("click", renderConsultantRegister);
 }
 
 function handleLogin(type, usernameValue, passwordValue) {
-  const account = authenticateAccount(type, usernameValue, passwordValue);
+  const username = normalizeUsername(usernameValue);
+  const account = getAuthAccounts().find(item => item.type === type && item.username === username);
 
-  if (!account) {
+  if (!account || authData.passwords[account.key] !== passwordValue) {
     renderLogin("Username or password is incorrect.");
     return;
   }
@@ -95,102 +103,6 @@ function handleLogin(type, usernameValue, passwordValue) {
   }
 
   completeLogin(account);
-}
-
-function authenticateAccount(type, usernameValue, passwordValue) {
-  const username = normalizeUsername(usernameValue);
-  const account = getAuthAccounts().find(item => item.type === type && item.username === username);
-  if (!account || authData.passwords[account.key] !== passwordValue) return null;
-  return account;
-}
-
-function renderConsultantRegister(message = "") {
-  activeSession = null;
-  setView("login");
-  clearCharts();
-  logoutButton.classList.add("hide");
-  app.innerHTML = `
-    <section class="hero register-hero">
-      <div class="hero-panel">
-        <div class="hero-copy">
-          <p class="eyebrow">Consultant registration</p>
-          <h1>Create your account</h1>
-          <p>Register once, then choose any skills pathway you want to build toward. Your account is saved in this browser's local database.</p>
-        </div>
-        <div class="hero-metrics" aria-label="Registration facts">
-          <div class="metric-tile"><strong>${Object.keys(ROLES).length}</strong><span>Pathways</span></div>
-          <div class="metric-tile"><strong>${getTotalSkillCount()}</strong><span>Skills</span></div>
-          <div class="metric-tile"><strong><i class="fa-solid fa-database" aria-hidden="true"></i></strong><span>Local DB</span></div>
-        </div>
-      </div>
-      <div class="login-panel register-panel">
-        <div>
-          <p class="eyebrow">New consultant</p>
-          <h2>Register</h2>
-          <p class="muted">Use these credentials for the consultant login form after registration.</p>
-        </div>
-        ${message ? `<div class="form-message error">${message}</div>` : ""}
-        <form id="consultantRegisterForm">
-          <div class="form-field">
-            <label for="registerName">Full name</label>
-            <input id="registerName" type="text" autocomplete="name">
-          </div>
-          <div class="form-field">
-            <label for="registerUsername">Username</label>
-            <input id="registerUsername" type="text" autocomplete="username" placeholder="e.g. alex.morgan">
-          </div>
-          <div class="form-field">
-            <label for="registerPassword">Password</label>
-            <input id="registerPassword" type="password" autocomplete="new-password">
-          </div>
-          <div class="form-field">
-            <label for="registerConfirmPassword">Confirm password</label>
-            <input id="registerConfirmPassword" type="password" autocomplete="new-password">
-          </div>
-          <div class="editor-actions">
-            <button class="ghost-button" id="backToLogin" type="button">
-              <i class="fa-solid fa-arrow-left" aria-hidden="true"></i>
-              Back
-            </button>
-            <button class="primary-button" type="submit">
-              <i class="fa-solid fa-user-plus" aria-hidden="true"></i>
-              Register
-            </button>
-          </div>
-        </form>
-      </div>
-    </section>
-  `;
-
-  document.getElementById("backToLogin").addEventListener("click", () => renderLogin());
-  document.getElementById("consultantRegisterForm").addEventListener("submit", event => {
-    event.preventDefault();
-    const password = document.getElementById("registerPassword").value;
-    const confirmPassword = document.getElementById("registerConfirmPassword").value;
-
-    if (password !== confirmPassword) {
-      renderConsultantRegister("The two passwords do not match.");
-      return;
-    }
-
-    const result = registerConsultant(
-      document.getElementById("registerName").value,
-      document.getElementById("registerUsername").value,
-      password
-    );
-
-    if (!result.ok) {
-      renderConsultantRegister(result.message);
-      return;
-    }
-
-    completeLogin({
-      type: "consultant",
-      id: result.consultant.id,
-      name: result.consultant.name,
-      username: result.consultant.username
-    });
-  });
 }
 
 function getActiveRoleId(consultant) {
@@ -282,4 +194,3 @@ function completeLogin(account) {
   saveUiState();
   renderRoleSelection();
 }
-
