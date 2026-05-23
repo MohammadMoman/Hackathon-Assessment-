@@ -26,7 +26,8 @@ function renderAdmin() {
           ["overview", "Overview", "fa-gauge"],
           ["consultants", "Consultants", "fa-users"],
           ["heatmap", "Heatmap", "fa-fire"],
-          ["targets", "SMART Targets", "fa-bullseye"]
+          ["targets", "SMART Targets", "fa-bullseye"],
+          ["manage-accounts", "Manage Accounts", "fa-user-gear"]
         ].map(([key, label, icon]) => `
           <button class="tab-button ${selectedAdminTab === key ? "active" : ""}" data-tab="${key}" type="button">
             <i class="fa-solid ${icon}" aria-hidden="true"></i>${label}
@@ -61,6 +62,10 @@ function renderAdminTab() {
     drawHeatCharts();
   }
   if (selectedAdminTab === "targets") host.innerHTML = renderAdminTargets();
+  if (selectedAdminTab === "manage-accounts") {
+    host.innerHTML = renderManageAccountsTable();
+    bindManageAccounts();
+  }
 }
 
 function renderAdminOverview() {
@@ -70,12 +75,161 @@ function renderAdminOverview() {
       <div class="stat-card"><span>Registered consultants</span><strong>${CONSULTANTS.length}</strong></div>
       <div class="stat-card"><span>Average progress</span><strong>${teamStats.averageProgress}%</strong></div>
       <div class="stat-card"><span>Saved SMART targets</span><strong>${teamStats.targetCount}</strong></div>
+      <div class="stat-card">
+        <span>Pending verifications</span>
+        <strong style="${teamStats.pendingVerificationCount > 0 ? 'color: #d97706;' : ''}">${teamStats.pendingVerificationCount}</strong>
+      </div>
     </div>
     <div class="section-panel" style="margin-top:16px">
       <h3>Academy lead summary</h3>
       <p class="muted">Use the tabs to review all consultants, identify common completed skills, spot missing skills, and inspect saved SMART goals.</p>
     </div>
   `;
+}
+
+function renderManageAccountsTable() {
+  const filtered = CONSULTANTS.filter(person => 
+    person.name.toLowerCase().includes(consultantSearchQuery.toLowerCase())
+  );
+
+  return `
+    <div class="section-panel" style="margin-top:16px">
+      <div class="view-header">
+        <div>
+          <h3>Account Management</h3>
+          <p>Delete consultant accounts and their associated progress data. This action is permanent for this browser's storage.</p>
+        </div>
+      </div>
+      <div class="search-container" style="margin-bottom: 1.5rem;">
+        <div class="form-field" style="max-width: 400px;">
+          <label for="manageAccountsSearch">Search accounts</label>
+          <input type="text" id="manageAccountsSearch" placeholder="Filter by name..." value="${consultantSearchQuery}" autocomplete="off">
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>System ID</th>
+              <th style="text-align: right;">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${filtered.map(person => `
+              <tr>
+                <td><strong>${person.name}</strong></td>
+                <td><code>${person.id}</code></td>
+                <td style="text-align: right;">
+                  <button class="ghost-button" style="margin-right: 8px;" data-reset-password="${person.id}">
+                    <i class="fa-solid fa-key" aria-hidden="true"></i> Reset
+                  </button>
+                  <button class="ghost-button" style="color: #b73554" data-delete-consultant="${person.id}">
+                    <i class="fa-solid fa-trash-can" aria-hidden="true"></i> Delete
+                  </button>
+                </td>
+              </tr>
+            `).join("")}
+            ${filtered.length === 0 ? '<tr><td colspan="3" style="text-align: center; padding: 2rem;"><p class="muted">No consultant accounts found matching your search.</p></td></tr>' : ''}
+          </tbody>
+        </table>
+      </div>
+
+      <div style="margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid rgba(0,0,0,0.05);">
+        <h4>Backup & Restore</h4>
+        <p class="muted" style="margin-bottom: 1rem;">Export the current database to a JSON file or restore from a previous backup.</p>
+        <div style="display: flex; gap: 12px;">
+          <button class="secondary-button" id="exportData">
+            <i class="fa-solid fa-download"></i> Export JSON
+          </button>
+          <label class="secondary-button" style="cursor: pointer;">
+            <i class="fa-solid fa-upload"></i> Import JSON
+            <input type="file" id="importData" accept=".json" style="display: none;">
+          </label>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function bindManageAccounts() {
+  const searchInput = document.getElementById("manageAccountsSearch");
+  if (searchInput) {
+    // Maintain focus and cursor position if user was typing
+    if (consultantSearchQuery !== "") {
+      searchInput.focus();
+      const len = searchInput.value.length;
+      searchInput.setSelectionRange(len, len);
+    }
+
+    searchInput.addEventListener("input", (e) => {
+      consultantSearchQuery = e.target.value;
+      renderAdminTab();
+    });
+  }
+
+  document.querySelectorAll("[data-reset-password]").forEach(button => {
+    button.addEventListener("click", () => {
+      const id = button.dataset.resetPassword;
+      const person = getConsultant(id);
+      const newPass = getDefaultPassword(makeUsername(person.name));
+      if (confirm(`Reset password for ${person.name}? The user will be forced to change it on next login. New temporary password: ${newPass}`)) {
+        const authKey = `consultant:${id}`;
+        authData.passwords[authKey] = newPass;
+        authData.changed[authKey] = false;
+        saveAuthData();
+      }
+    });
+  });
+
+  document.getElementById("exportData")?.addEventListener("click", () => {
+    const data = {
+      appData,
+      authData,
+      CONSULTANTS,
+      timestamp: new Date().toISOString()
+    };
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `skills-matrix-backup-${new Date().toISOString().slice(0, 10)}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+  });
+
+  document.getElementById("importData")?.addEventListener("change", (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      try {
+        const imported = JSON.parse(event.target.result);
+        if (!imported.CONSULTANTS || !imported.appData) throw new Error("Invalid format");
+        
+        if (confirm("Importing data will overwrite all current progress and accounts. Continue?")) {
+          localStorage.setItem(CONSULTANT_STORAGE_KEY, JSON.stringify(imported.CONSULTANTS));
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(imported.appData));
+          localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(imported.authData));
+          window.location.reload();
+        }
+      } catch (err) {
+        alert("Failed to import: The file format is invalid.");
+      }
+    };
+    reader.readAsText(file);
+  });
+
+  document.querySelectorAll("[data-delete-consultant]").forEach(button => {
+    button.addEventListener("click", () => {
+      const id = button.dataset.deleteConsultant;
+      const person = getConsultant(id);
+      if (confirm(`Are you sure you want to delete the account for ${person.name}? All progress and targets will be lost.`)) {
+        deleteConsultant(id);
+        renderAdmin();
+      }
+    });
+  });
 }
 
 function renderConsultantTable() {

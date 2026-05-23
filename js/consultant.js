@@ -121,6 +121,7 @@ function renderConsultantDashboard(consultantId, options = {}) {
 
   bindAccordionEvents();
   if (!readOnly) bindSkillEvents(consultant);
+  else bindAdminVerificationEvents(consultant);
 }
 
 function renderProgressBar(percent, height = "12px", showLabel = false) {
@@ -202,7 +203,18 @@ function renderSkillAccordions(consultant, readOnly, role) {
 
 function renderSkillCard(item, consultantId, readOnly) {
   const status = getStatus(consultantId, item.id);
+  const verification = getVerificationStatus(consultantId, item.id);
   const existingTarget = appData.targets[consultantId][item.id];
+
+  let verificationBadge = "";
+  if (status === "complete") {
+    if (verification === "verified") {
+      verificationBadge = `<span class="pill" style="background: #e6f4ea; color: #1e7e34; border: 1px solid #1e7e34;"><i class="fa-solid fa-circle-check"></i> Verified</span>`;
+    } else if (verification === "flagged") {
+      verificationBadge = `<span class="pill" style="background: #fdf2f2; color: #b73554; border: 1px solid #b73554;"><i class="fa-solid fa-circle-exclamation"></i> Flagged</span>`;
+    }
+  }
+
   return `
     <article class="skill-card" data-skill-id="${item.id}">
       <div class="skill-head">
@@ -210,7 +222,10 @@ function renderSkillCard(item, consultantId, readOnly) {
           <span class="pill">${item.category}</span>
           <h3>${item.name}</h3>
         </div>
-        <span class="pill">${STATUS_LABELS[status]}</span>
+        <div style="display: flex; gap: 8px; align-items: center;">
+          ${verificationBadge}
+          <span class="pill">${STATUS_LABELS[status]}</span>
+        </div>
       </div>
       <p>${item.description}</p>
       <div class="status-row" aria-label="Skill status for ${item.name}">
@@ -218,6 +233,19 @@ function renderSkillCard(item, consultantId, readOnly) {
           <button class="status-button ${status === key ? "active" : ""}" data-action="status" data-status="${key}" type="button" ${readOnly ? "disabled" : ""}>${label}</button>
         `).join("")}
       </div>
+      ${readOnly && status === "complete" ? `
+        <div class="admin-verification-actions" style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid rgba(0,0,0,0.05);">
+          <p class="eyebrow" style="margin-bottom: 0.75rem;">Academy Lead Verification</p>
+          <div style="display: flex; gap: 8px;">
+            <button class="status-button ${verification === 'verified' ? 'active' : ''}" data-action="verify" data-value="verified" type="button" style="flex: 1;">
+              <i class="fa-solid fa-check"></i> Verify
+            </button>
+            <button class="status-button ${verification === 'flagged' ? 'active' : ''}" data-action="verify" data-value="flagged" type="button" style="flex: 1;">
+              <i class="fa-solid fa-flag"></i> Flag
+            </button>
+          </div>
+        </div>
+      ` : ""}
       <div>
         <strong>Learning Bridge</strong>
         <div class="resource-list">
@@ -272,6 +300,24 @@ function bindSkillEvents(consultant) {
       const card = button.closest(".skill-card");
       const skillId = card.dataset.skillId;
       showSmartEditor(card, consultant.id, skillId);
+    });
+  });
+}
+
+function bindAdminVerificationEvents(consultant) {
+  document.querySelectorAll("[data-action='verify']").forEach(button => {
+    button.addEventListener("click", () => {
+      const skillId = button.closest(".skill-card").dataset.skillId;
+      const value = button.dataset.value;
+      
+      if (appData.verifications[consultant.id][skillId] === value) {
+        delete appData.verifications[consultant.id][skillId];
+      } else {
+        appData.verifications[consultant.id][skillId] = value;
+      }
+      
+      saveData();
+      renderConsultantDashboard(consultant.id, { readOnly: true });
     });
   });
 }

@@ -93,6 +93,10 @@ function getStatus(consultantId, skillId) {
   return appData.progress[consultantId]?.[skillId] || "not-started";
 }
 
+function getVerificationStatus(consultantId, skillId) {
+  return appData.verifications?.[consultantId]?.[skillId] || null;
+}
+
 function getResources(skillId) {
   return courseData[skillId] || FALLBACK_COURSES[skillId] || [];
 }
@@ -123,11 +127,22 @@ function getTotalSkillCount() {
 }
 
 function getTeamStats() {
-  if (CONSULTANTS.length === 0) return { averageProgress: 0, targetCount: 0 };
+  if (CONSULTANTS.length === 0) return { averageProgress: 0, targetCount: 0, pendingVerificationCount: 0 };
   const stats = CONSULTANTS.map(person => getConsultantStats(person.id));
   const averageProgress = Math.round(stats.reduce((sum, item) => sum + item.progressPercent, 0) / stats.length);
   const targetCount = stats.reduce((sum, item) => sum + item.targetCount, 0);
-  return { averageProgress, targetCount };
+
+  let pendingVerificationCount = 0;
+  CONSULTANTS.forEach(person => {
+    if (!person.roleId || !ROLES[person.roleId]) return;
+    getRoleSkills(person.roleId).forEach(skill => {
+      if (getStatus(person.id, skill.id) === "complete" && getVerificationStatus(person.id, skill.id) === null) {
+        pendingVerificationCount++;
+      }
+    });
+  });
+
+  return { averageProgress, targetCount, pendingVerificationCount };
 }
 
 function getSkillRanking(status) {

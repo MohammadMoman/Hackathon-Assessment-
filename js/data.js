@@ -7,7 +7,7 @@ var STORAGE_KEY = "ten10-skills-matrix-v2";
 var UI_STORAGE_KEY = "ten10-skills-matrix-ui-v1";
 var AUTH_STORAGE_KEY = "ten10-skills-matrix-auth-v1";
 var CONSULTANT_STORAGE_KEY = "ten10-skills-matrix-consultants-v1";
-var ADMIN_TABS = ["overview", "consultants", "heatmap", "targets"];
+var ADMIN_TABS = ["overview", "consultants", "heatmap", "targets", "manage-accounts"];
 var ADMIN_ACCOUNTS = [
   { id: "matt", name: "Matt McCormick", username: "matt.mccormick" },
   { id: "craig", name: "Craig Booth", username: "craig.booth" },

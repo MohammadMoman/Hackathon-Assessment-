@@ -17,6 +17,24 @@ function saveConsultantDatabase() {
   localStorage.setItem(CONSULTANT_STORAGE_KEY, JSON.stringify(CONSULTANTS));
 }
 
+function deleteConsultant(id) {
+  const index = CONSULTANTS.findIndex(c => c.id === id);
+  if (index !== -1) {
+    CONSULTANTS.splice(index, 1);
+    saveConsultantDatabase();
+  }
+
+  if (appData.progress[id]) delete appData.progress[id];
+  if (appData.targets[id]) delete appData.targets[id];
+  if (appData.verifications[id]) delete appData.verifications[id];
+  saveData();
+
+  const authKey = `consultant:${id}`;
+  if (authData.passwords[authKey]) delete authData.passwords[authKey];
+  if (authData.changed[authKey]) delete authData.changed[authKey];
+  saveAuthData();
+}
+
 async function loadCourseData() {
   try {
     const response = await fetch("data/courses.json");
@@ -78,8 +96,10 @@ function mergeSavedData(saved) {
   CONSULTANTS.forEach(consultant => {
     const savedProgress = saved?.progress?.[consultant.id] || {};
     const savedTargets = saved?.targets?.[consultant.id] || {};
+    const savedVerifications = saved?.verifications?.[consultant.id] || {};
     seed.progress[consultant.id] = { ...seed.progress[consultant.id], ...savedProgress };
     seed.targets[consultant.id] = { ...seed.targets[consultant.id], ...savedTargets };
+    seed.verifications[consultant.id] = { ...seed.verifications[consultant.id], ...savedVerifications };
   });
   return seed;
 }
@@ -87,20 +107,24 @@ function mergeSavedData(saved) {
 function createSeedData() {
   const progress = {};
   const targets = {};
+  const verifications = {};
 
   CONSULTANTS.forEach(consultant => {
     progress[consultant.id] = {};
     targets[consultant.id] = {};
+    verifications[consultant.id] = {};
     seedConsultantProgress(consultant, progress[consultant.id]);
   });
 
   limitSharedStatus(progress, "complete", 2);
   addSeedTargets(progress, targets);
 
-  return { progress, targets };
+  return { progress, targets, verifications };
 }
 
 function seedConsultantProgress(consultant, progressMap) {
+  if (!consultant.roleId || !ROLES[consultant.roleId]) return;
+
   const skills = getRoleSkills(consultant.roleId);
   const completeTarget = randomInt(2, Math.min(7, skills.length - 2));
   const inProgressTarget = randomInt(2, Math.min(5, skills.length - completeTarget));
@@ -120,6 +144,8 @@ function seedConsultantProgress(consultant, progressMap) {
 function addSeedTargets(progress, targets) {
   const deadlines = ["2026-06-18", "2026-06-28", "2026-07-05", "2026-07-12", "2026-07-19"];
   CONSULTANTS.forEach((consultant, consultantIndex) => {
+    if (!consultant.roleId || !ROLES[consultant.roleId]) return;
+
     const targetSkills = getRoleSkills(consultant.roleId)
       .filter(item => progress[consultant.id][item.id] === "in-progress")
       .slice(0, consultantIndex % 3 === 0 ? 2 : 1);

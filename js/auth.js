@@ -52,6 +52,10 @@ function renderLogin(message = "") {
                 Sign in as Consultant
               </button>
             </form>
+            <button class="secondary-button" id="showRegister" type="button" style="width: 100%; margin-top: 1rem;">
+              <i class="fa-solid fa-user-plus" aria-hidden="true"></i>
+              Register as Consultant
+            </button>
           </div>
           <div class="login-choice">
             <h3><i class="fa-solid fa-chart-line" aria-hidden="true"></i> Academy Lead</h3>
@@ -86,6 +90,7 @@ function renderLogin(message = "") {
     event.preventDefault();
     handleLogin("admin", document.getElementById("adminUsername").value, document.getElementById("adminPassword").value);
   });
+  document.getElementById("showRegister").addEventListener("click", () => renderRegister());
 }
 
 function handleLogin(type, usernameValue, passwordValue) {
@@ -103,6 +108,86 @@ function handleLogin(type, usernameValue, passwordValue) {
   }
 
   completeLogin(account);
+}
+
+function renderRegister(message = "") {
+  setView("login");
+  app.innerHTML = `
+    <section class="hero">
+      <div class="hero-panel">
+        <div class="hero-copy">
+          <p class="eyebrow">Join the platform</p>
+          <h1>Consultant Registration</h1>
+          <p>Create your profile to start tracking your skills and career progression.</p>
+        </div>
+      </div>
+      <div class="login-panel">
+        <div>
+          <p class="eyebrow">New account</p>
+          <h2>Sign up</h2>
+          <p class="muted">Enter your details to register as a consultant.</p>
+        </div>
+        ${message ? `<div class="form-message error">${message}</div>` : ""}
+        <form id="registerForm">
+          <div class="form-field">
+            <label for="regName">Full Name</label>
+            <input id="regName" type="text" required autocomplete="name">
+          </div>
+          <div class="form-field">
+            <label for="regPassword">Password</label>
+            <input id="regPassword" type="password" required autocomplete="new-password" minlength="8">
+          </div>
+          <div class="form-field">
+            <label for="regConfirm">Confirm Password</label>
+            <input id="regConfirm" type="password" required autocomplete="new-password">
+          </div>
+          <button class="primary-button" type="submit" style="width: 100%;">
+            <i class="fa-solid fa-user-plus" aria-hidden="true"></i>
+            Create Account
+          </button>
+          <button class="ghost-button" id="backToLogin" type="button" style="width: 100%; margin-top: 10px;">
+            Back to sign in
+          </button>
+        </form>
+      </div>
+    </section>
+  `;
+
+  document.getElementById("backToLogin").addEventListener("click", () => renderLogin());
+  document.getElementById("registerForm").addEventListener("submit", event => {
+    event.preventDefault();
+    const name = document.getElementById("regName").value.trim();
+    const password = document.getElementById("regPassword").value;
+    const confirm = document.getElementById("regConfirm").value;
+
+    if (password !== confirm) {
+      renderRegister("Passwords do not match.");
+      return;
+    }
+
+    const username = makeUsername(name);
+    const id = name.toLowerCase().replace(/[^a-z0-9]/g, "-");
+    
+    if (CONSULTANTS.some(c => c.id === id)) {
+      renderRegister("A consultant with this name already exists.");
+      return;
+    }
+
+    const newConsultant = { id, name, roleId: null };
+    CONSULTANTS.push(newConsultant);
+    saveConsultantDatabase();
+
+    const accountKey = `consultant:${id}`;
+    authData.passwords[accountKey] = password;
+    authData.changed[accountKey] = true;
+    saveAuthData();
+
+    appData.progress[id] = {};
+    appData.targets[id] = {};
+    saveData();
+
+    completeLogin({ type: "consultant", id, name, username });
+  });
 }
 
 function getActiveRoleId(consultant) {
