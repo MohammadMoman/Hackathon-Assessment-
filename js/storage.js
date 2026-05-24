@@ -27,6 +27,7 @@ function deleteConsultant(id) {
   if (appData.progress[id]) delete appData.progress[id];
   if (appData.targets[id]) delete appData.targets[id];
   if (appData.verifications[id]) delete appData.verifications[id];
+  if (appData.comments[id]) delete appData.comments[id];
   saveData();
 
   const authKey = `consultant:${id}`;
@@ -97,9 +98,11 @@ function mergeSavedData(saved) {
     const savedProgress = saved?.progress?.[consultant.id] || {};
     const savedTargets = saved?.targets?.[consultant.id] || {};
     const savedVerifications = saved?.verifications?.[consultant.id] || {};
+    const savedComments = saved?.comments?.[consultant.id] || {};
     seed.progress[consultant.id] = { ...seed.progress[consultant.id], ...savedProgress };
     seed.targets[consultant.id] = { ...seed.targets[consultant.id], ...savedTargets };
     seed.verifications[consultant.id] = { ...seed.verifications[consultant.id], ...savedVerifications };
+    seed.comments[consultant.id] = { ...seed.comments[consultant.id], ...savedComments };
   });
   return seed;
 }
@@ -108,18 +111,20 @@ function createSeedData() {
   const progress = {};
   const targets = {};
   const verifications = {};
+  const comments = {};
 
   CONSULTANTS.forEach(consultant => {
     progress[consultant.id] = {};
     targets[consultant.id] = {};
     verifications[consultant.id] = {};
+    comments[consultant.id] = {};
     seedConsultantProgress(consultant, progress[consultant.id]);
   });
 
   limitSharedStatus(progress, "complete", 2);
   addSeedTargets(progress, targets);
 
-  return { progress, targets, verifications };
+  return { progress, targets, verifications, comments };
 }
 
 function seedConsultantProgress(consultant, progressMap) {

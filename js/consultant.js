@@ -204,6 +204,7 @@ function renderSkillAccordions(consultant, readOnly, role) {
 function renderSkillCard(item, consultantId, readOnly) {
   const status = getStatus(consultantId, item.id);
   const verification = getVerificationStatus(consultantId, item.id);
+  const comment = getComment(consultantId, item.id);
   const existingTarget = appData.targets[consultantId][item.id];
 
   let verificationBadge = "";
@@ -233,6 +234,20 @@ function renderSkillCard(item, consultantId, readOnly) {
           <button class="status-button ${status === key ? "active" : ""}" data-action="status" data-status="${key}" type="button" ${readOnly ? "disabled" : ""}>${label}</button>
         `).join("")}
       </div>
+      ${status === "complete" ? `
+        <div class="evidence-section" style="margin-top: 1rem; padding: 1rem; background: rgba(0,0,0,0.02); border-radius: 8px; border: 1px solid rgba(0,0,0,0.05);">
+          <label for="evidence-${item.id}" class="eyebrow" style="display: block; margin-bottom: 0.5rem;">Evidence & Notes</label>
+          ${readOnly ? `
+            <p style="font-size: 0.95rem; line-height: 1.5; color: #44546a; white-space: pre-wrap;">${comment || '<span class="muted">No evidence provided.</span>'}</p>
+          ` : `
+            <textarea id="evidence-${item.id}" placeholder="Add links to PRs, certificates, or describe how you demonstrated this skill..." 
+              style="width: 100%; min-height: 80px; padding: 0.75rem; border: 1px solid rgba(0,0,0,0.1); border-radius: 6px; font-size: 0.9rem; resize: vertical;"
+              data-action="comment">${comment}</textarea>
+            <p class="muted" style="font-size: 0.8rem; margin-top: 0.5rem;"><i class="fa-solid fa-circle-info"></i> Your notes help the Academy Lead verify your progress.</p>
+          `}
+        </div>
+      ` : ""}
+
       ${readOnly && status === "complete" ? `
         <div class="admin-verification-actions" style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid rgba(0,0,0,0.05);">
           <p class="eyebrow" style="margin-bottom: 0.75rem;">Academy Lead Verification</p>
@@ -292,6 +307,14 @@ function bindSkillEvents(consultant) {
       appData.progress[consultant.id][skillId] = button.dataset.status;
       saveData();
       renderConsultantDashboard(consultant.id);
+    });
+  });
+
+  document.querySelectorAll("[data-action='comment']").forEach(textarea => {
+    textarea.addEventListener("blur", () => {
+      const skillId = textarea.closest(".skill-card").dataset.skillId;
+      appData.comments[consultant.id][skillId] = textarea.value.trim();
+      saveData();
     });
   });
 

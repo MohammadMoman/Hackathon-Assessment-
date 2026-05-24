@@ -1,4 +1,7 @@
 // Renders the admin dashboard tabs, consultant table, comparisons, heatmap charts, and saved targets.
+
+var showPendingOnly = false;
+
 function renderAdmin() {
   if (!activeSession || activeSession.type !== "admin") {
     renderLogin();
@@ -41,6 +44,7 @@ function renderAdmin() {
     button.addEventListener("click", () => {
       selectedAdminTab = button.dataset.tab;
       consultantSearchQuery = "";
+      showPendingOnly = false;
       adminDrilldownId = null;
       renderAdmin();
     });
@@ -233,15 +237,27 @@ function bindManageAccounts() {
 }
 
 function renderConsultantTable() {
-  const filtered = CONSULTANTS.filter(person => 
-    person.name.toLowerCase().includes(consultantSearchQuery.toLowerCase())
-  );
+  const teamStats = getTeamStats();
+  const filtered = CONSULTANTS.filter(person => {
+    const matchesSearch = person.name.toLowerCase().includes(consultantSearchQuery.toLowerCase());
+    const matchesPending = !showPendingOnly || hasPendingVerifications(person.id);
+    return matchesSearch && matchesPending;
+  });
 
   return `
-    <div class="search-container" style="margin-bottom: 1.5rem;">
-      <div class="form-field" style="max-width: 400px;">
+    <div class="search-container" style="margin-bottom: 1.5rem; display: flex; align-items: flex-end; gap: 2rem; flex-wrap: wrap;">
+      <div class="form-field" style="max-width: 400px; flex: 1; min-width: 250px;">
         <label for="consultantSearch">Search consultants</label>
         <input type="text" id="consultantSearch" placeholder="Filter by name..." value="${consultantSearchQuery}" autocomplete="off">
+      </div>
+      <div class="form-field" style="margin-bottom: 12px;">
+        <label class="checkbox-label" style="display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 0.9rem; font-weight: 500; color: #44546a;">
+          <input type="checkbox" id="pendingFilter" ${showPendingOnly ? "checked" : ""}>
+          <span>Pending verification only</span>
+          ${teamStats.pendingVerificationCount > 0 ? 
+            `<span class="pill" style="background: #fffbeb; color: #d97706; border-color: #fde68a; font-size: 0.75rem;">${teamStats.pendingVerificationCount}</span>` 
+            : ""}
+        </label>
       </div>
     </div>
     <div class="table-wrap">
@@ -290,6 +306,12 @@ function bindConsultantTable() {
       renderAdminTab();
     });
   }
+
+  const pendingFilter = document.getElementById("pendingFilter");
+  pendingFilter?.addEventListener("change", (e) => {
+    showPendingOnly = e.target.checked;
+    renderAdminTab();
+  });
 
   document.querySelectorAll("[data-view-consultant]").forEach(element => {
     element.addEventListener("click", (e) => {

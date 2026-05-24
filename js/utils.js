@@ -97,6 +97,18 @@ function getVerificationStatus(consultantId, skillId) {
   return appData.verifications?.[consultantId]?.[skillId] || null;
 }
 
+function getComment(consultantId, skillId) {
+  return appData.comments?.[consultantId]?.[skillId] || "";
+}
+
+function hasPendingVerifications(consultantId) {
+  const person = getConsultant(consultantId);
+  if (!person || !person.roleId || !ROLES[person.roleId]) return false;
+  return getRoleSkills(person.roleId).some(skill => 
+    getStatus(person.id, skill.id) === "complete" && getVerificationStatus(person.id, skill.id) === null
+  );
+}
+
 function getResources(skillId) {
   return courseData[skillId] || FALLBACK_COURSES[skillId] || [];
 }
