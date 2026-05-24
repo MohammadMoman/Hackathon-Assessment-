@@ -125,11 +125,16 @@ function renderConsultantDashboard(consultantId, options = {}) {
 }
 
 function renderProgressBar(percent, height = "12px", showLabel = false) {
+  let color = "#5b3baa"; // Default theme purple for high progress
+  if (percent === 100) color = "#1e7e34"; // Success green for completion
+  else if (percent < 30) color = "#b73554"; // Red for low progress
+  else if (percent < 70) color = "#d97706"; // Amber for mid-range progress
+
   return `
     <div style="display: flex; align-items: center; gap: 12px; width: 100%;">
       ${showLabel ? `<span style="font-size: 0.85rem; font-weight: 600; min-width: 35px; text-align: right;">${percent}%</span>` : ""}
       <div class="progress-track" style="height: ${height}; flex: 1; margin-bottom: 0;">
-        <div class="progress-fill" style="width:${percent}%"></div>
+        <div class="progress-fill" style="width:${percent}%; background-color: ${color};"></div>
       </div>
     </div>
   `;
@@ -172,7 +177,10 @@ function renderSkillAccordions(consultant, readOnly, role) {
     <div class="accordion">
       ${LEVELS.map((level, index) => {
         const levelSkills = role.skills.filter(item => item.level === level.key);
-        const completeCount = levelSkills.filter(item => getStatus(consultant.id, item.id) === "complete").length;
+        const completeCount = levelSkills.filter(item => 
+          getStatus(consultant.id, item.id) === "complete" && 
+          getVerificationStatus(consultant.id, item.id) === "verified"
+        ).length;
         const levelProgress = Math.round((completeCount / levelSkills.length) * 100) || 0;
 
         const isLocked = !readOnly && !previousLevelComplete;
@@ -213,6 +221,8 @@ function renderSkillCard(item, consultantId, readOnly) {
       verificationBadge = `<span class="pill" style="background: #e6f4ea; color: #1e7e34; border: 1px solid #1e7e34;"><i class="fa-solid fa-circle-check"></i> Verified</span>`;
     } else if (verification === "flagged") {
       verificationBadge = `<span class="pill" style="background: #fdf2f2; color: #b73554; border: 1px solid #b73554;"><i class="fa-solid fa-circle-exclamation"></i> Flagged</span>`;
+    } else {
+      verificationBadge = `<span class="pill" style="background: #fffbeb; color: #d97706; border: 1px solid #d97706;"><i class="fa-solid fa-clock"></i> Pending Verification</span>`;
     }
   }
 
@@ -243,7 +253,12 @@ function renderSkillCard(item, consultantId, readOnly) {
             <textarea id="evidence-${item.id}" placeholder="Add links to PRs, certificates, or describe how you demonstrated this skill..." 
               style="width: 100%; min-height: 80px; padding: 0.75rem; border: 1px solid rgba(0,0,0,0.1); border-radius: 6px; font-size: 0.9rem; resize: vertical;"
               data-action="comment">${comment}</textarea>
-            <p class="muted" style="font-size: 0.8rem; margin-top: 0.5rem;"><i class="fa-solid fa-circle-info"></i> Your notes help the Academy Lead verify your progress.</p>
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-top: 0.75rem; gap: 12px;">
+              <button class="primary-button" data-action="submit-evidence" type="button" style="width: auto; padding: 6px 16px; font-size: 0.85rem;">
+                <i class="fa-solid fa-paper-plane"></i> Submit Evidence
+              </button>
+              <p class="muted" style="font-size: 0.8rem; margin: 0; flex: 1;"><i class="fa-solid fa-circle-info"></i> Notes help the Lead verify your progress.</p>
+            </div>
           `}
         </div>
       ` : ""}
@@ -315,6 +330,26 @@ function bindSkillEvents(consultant) {
       const skillId = textarea.closest(".skill-card").dataset.skillId;
       appData.comments[consultant.id][skillId] = textarea.value.trim();
       saveData();
+    });
+  });
+
+  document.querySelectorAll("[data-action='submit-evidence']").forEach(button => {
+    button.addEventListener("click", () => {
+      const card = button.closest(".skill-card");
+      const skillId = card.dataset.skillId;
+      const textarea = card.querySelector("textarea[data-action='comment']");
+      appData.comments[consultant.id][skillId] = textarea.value.trim();
+      saveData();
+      
+      const originalHtml = button.innerHTML;
+      button.innerHTML = '<i class="fa-solid fa-check"></i> Saved';
+      button.style.background = "#1e7e34";
+      button.style.borderColor = "#1e7e34";
+      setTimeout(() => {
+        button.innerHTML = originalHtml;
+        button.style.background = "";
+        button.style.borderColor = "";
+      }, 2000);
     });
   });
 

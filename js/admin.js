@@ -83,6 +83,10 @@ function renderAdminOverview() {
         <span>Pending verifications</span>
         <strong style="${teamStats.pendingVerificationCount > 0 ? 'color: #d97706;' : ''}">${teamStats.pendingVerificationCount}</strong>
       </div>
+      <div class="stat-card">
+        <span>Overdue targets</span>
+        <strong style="${teamStats.overdueTargetCount > 0 ? 'color: #b73554;' : ''}">${teamStats.overdueTargetCount}</strong>
+      </div>
     </div>
     <div class="section-panel" style="margin-top:16px">
       <h3>Academy lead summary</h3>
@@ -543,7 +547,10 @@ function renderAdminTargets() {
               <div class="smart-target-item" data-consultant-id="${group.person.id}" data-skill-id="${skillId}">
                 <strong>${item.name}</strong>
                 <p>${saved.text}</p>
-                <span class="pill"><i class="fa-solid fa-calendar" aria-hidden="true"></i> ${saved.deadline}</span>
+                <span class="pill" style="${isTargetOverdue(saved.deadline) ? 'background: #fdf2f2; color: #b73554; border: 1px solid #b73554;' : ''}">
+                  <i class="fa-solid fa-calendar" aria-hidden="true"></i> ${saved.deadline}
+                  ${isTargetOverdue(saved.deadline) ? ' &middot; Overdue' : ''}
+                </span>
               </div>
             `;
           }).join("")}

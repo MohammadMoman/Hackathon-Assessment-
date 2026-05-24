@@ -35,11 +35,11 @@ var ROLES = {
       skill("mt-l1-1", "manualTester", "level1", "Test Fundamentals", "Testing mindset", "Understand why testing matters, what risk means, and how defects affect users."),
       skill("mt-l1-2", "manualTester", "level1", "Test Design", "Writing test cases", "Create clear test cases with steps, expected results, and acceptance criteria."),
       skill("mt-l1-3", "manualTester", "level1", "Tools", "Defect logging", "Log defects with useful titles, reproduction steps, evidence, severity, and priority."),
-      skill("mt-l1-4", "manualTester", "level1", "Consultancy", "Clear status updates", "Explain testing progress and blockers in concise updates for a delivery team."),
       skill("mt-l2-1", "manualTester", "level2", "Test Design", "Exploratory testing", "Use charters and notes to investigate risk areas beyond scripted test cases."),
       skill("mt-l2-2", "manualTester", "level2", "Tools", "Jira workflow", "Manage test and defect workflow through a sprint board without losing traceability."),
       skill("mt-l2-3", "manualTester", "level2", "Quality Practice", "Regression planning", "Select high-value regression coverage based on recent change and business risk."),
       skill("mt-l2-4", "manualTester", "level2", "Data", "Test data preparation", "Prepare realistic test data while respecting privacy and environment constraints."),
+      skill("mt-l2-5", "manualTester", "level2", "Mobile", "Mobile testing basics", "Understand device-specific challenges like connectivity, screen sizes, and OS versions."),
       skill("mt-l3-1", "manualTester", "level3", "Strategy", "Risk-based testing", "Lead test prioritisation using business impact, probability, and confidence."),
       skill("mt-l3-2", "manualTester", "level3", "Leadership", "UAT coordination", "Support users through acceptance testing with clear evidence and issue triage."),
       skill("mt-l3-3", "manualTester", "level3", "Quality Practice", "Release readiness", "Advise whether a release is ready using evidence, risk, and known defects."),
@@ -54,14 +54,14 @@ var ROLES = {
       skill("at-l1-2", "automationTester", "level1", "Automation", "Selector strategy", "Choose stable selectors that make browser tests less fragile."),
       skill("at-l1-3", "automationTester", "level1", "Tools", "Git basics", "Clone, branch, commit, and push test code safely."),
       skill("at-l1-4", "automationTester", "level1", "Testing", "Assertions", "Write clear assertions that prove the expected behaviour happened."),
+      skill("at-l1-5", "automationTester", "level1", "Coding", "Clean Code basics", "Apply naming conventions and basic refactoring to keep test scripts readable."),
       skill("at-l2-1", "automationTester", "level2", "Frameworks", "Playwright flows", "Automate meaningful user journeys with setup, actions, assertions, and cleanup."),
       skill("at-l2-2", "automationTester", "level2", "Maintenance", "Debugging flaky tests", "Investigate timing, data, and environment causes behind unreliable tests."),
       skill("at-l2-3", "automationTester", "level2", "API Testing", "API checks", "Validate API responses, status codes, and payload fields as part of test coverage."),
       skill("at-l2-4", "automationTester", "level2", "CI", "Pipeline test runs", "Run automated tests in a delivery pipeline and interpret failures."),
       skill("at-l3-1", "automationTester", "level3", "Strategy", "Automation pyramid", "Choose the right mix of unit, API, integration, and UI tests."),
       skill("at-l3-2", "automationTester", "level3", "Architecture", "Framework design", "Design reusable helpers and fixtures without hiding important test intent."),
-      skill("at-l3-3", "automationTester", "level3", "Reporting", "Quality dashboards", "Turn automated results into useful confidence signals for stakeholders."),
-      skill("at-l3-4", "automationTester", "level3", "Coaching", "Test code reviews", "Review automation pull requests for readability, coverage, and maintainability.")
+      skill("at-l3-3", "automationTester", "level3", "Reporting", "Quality dashboards", "Turn automated results into useful confidence signals for stakeholders.")
     ]
   },
   javaDeveloper: {
@@ -76,6 +76,7 @@ var ROLES = {
       skill("jd-l2-2", "javaDeveloper", "level2", "Data", "SQL queries", "Read and write relational data with joins, filtering, and ordering."),
       skill("jd-l2-3", "javaDeveloper", "level2", "Design", "Service layer design", "Separate controllers, services, and repositories with clear responsibilities."),
       skill("jd-l2-4", "javaDeveloper", "level2", "Testing", "Integration tests", "Test service behaviour across API and data boundaries."),
+      skill("jd-l2-5", "javaDeveloper", "level2", "Tools", "Maven/Gradle", "Manage project dependencies, build lifecycles, and plugins effectively."),
       skill("jd-l3-1", "javaDeveloper", "level3", "Architecture", "API design", "Design consistent endpoints, error shapes, and versioning for consumers."),
       skill("jd-l3-2", "javaDeveloper", "level3", "Performance", "Query optimisation", "Identify slow queries and improve them using indexes and better access patterns."),
       skill("jd-l3-3", "javaDeveloper", "level3", "Security", "Secure coding", "Handle authentication, authorisation, secrets, and validation responsibly."),
@@ -89,7 +90,6 @@ var ROLES = {
       skill("ba-l1-1", "businessAnalyst", "level1", "Discovery", "Stakeholder interviews", "Ask structured questions to uncover needs, constraints, and success measures."),
       skill("ba-l1-2", "businessAnalyst", "level1", "Requirements", "User stories", "Write user stories with clear acceptance criteria and business value."),
       skill("ba-l1-3", "businessAnalyst", "level1", "Process", "Process mapping", "Map current and future workflows in a way teams can validate."),
-      skill("ba-l1-4", "businessAnalyst", "level1", "Consultancy", "Workshop notes", "Capture decisions, actions, risks, and assumptions after a meeting."),
       skill("ba-l2-1", "businessAnalyst", "level2", "Discovery", "Facilitation", "Run workshops that keep stakeholders focused and produce decisions."),
       skill("ba-l2-2", "businessAnalyst", "level2", "Requirements", "Backlog refinement", "Split work into valuable, testable items with clear priority."),
       skill("ba-l2-3", "businessAnalyst", "level2", "Data", "Data requirements", "Define fields, rules, ownership, and reporting needs for a feature."),
@@ -133,14 +133,14 @@ var ROLES = {
       skill("sd-l3-1", "serviceDeskAnalyst", "level3", "Problem", "Problem management", "Identify recurring incidents and contribute evidence to root cause analysis."),
       skill("sd-l3-2", "serviceDeskAnalyst", "level3", "Reporting", "Service metrics", "Interpret SLA, backlog, first-contact resolution, and customer satisfaction trends."),
       skill("sd-l3-3", "serviceDeskAnalyst", "level3", "Coaching", "Shift-left support", "Improve self-service and first-line resolution through coaching and knowledge articles."),
-      skill("sd-l3-4", "serviceDeskAnalyst", "level3", "Quality", "Service improvement", "Suggest practical changes that reduce repeat contacts and improve user experience.")
+      skill("sd-l3-4", "serviceDeskAnalyst", "level3", "Quality", "Service improvement", "Suggest practical changes that reduce repeat contacts and improve user experience."),
+      skill("sd-l3-5", "serviceDeskAnalyst", "level3", "Security", "Security triage", "Identify and escalate potential security incidents or social engineering attempts.")
     ]
   },
   softwareTester: {
     title: "Software Tester",
     summary: "Applies structured testing, evidence, and automation awareness to improve product quality.",
     skills: [
-      skill("st-l1-1", "softwareTester", "level1", "Testing", "Testing principles", "Explain test levels, test types, defect lifecycle, and quality risk."),
       skill("st-l1-2", "softwareTester", "level1", "Design", "Test scenarios", "Create scenarios and test cases from requirements, acceptance criteria, and risk."),
       skill("st-l1-3", "softwareTester", "level1", "Execution", "Test execution", "Run tests carefully, capture evidence, and report actual versus expected results."),
       skill("st-l1-4", "softwareTester", "level1", "Defects", "Defect reports", "Raise useful defects with steps, evidence, severity, priority, and environment details."),
@@ -161,15 +161,12 @@ var ROLES = {
       skill("rpa-l1-1", "rpaAnalyst", "level1", "Discovery", "Process discovery", "Identify repetitive, rule-based tasks that may be suitable for automation."),
       skill("rpa-l1-2", "rpaAnalyst", "level1", "Documentation", "Process definition", "Document current steps, inputs, outputs, systems, exceptions, and owners."),
       skill("rpa-l1-3", "rpaAnalyst", "level1", "Data", "Structured data", "Recognise structured inputs and data rules that automation can reliably use."),
-      skill("rpa-l1-4", "rpaAnalyst", "level1", "Tools", "RPA concepts", "Explain bots, queues, triggers, selectors, credentials, and attended versus unattended automation."),
       skill("rpa-l2-1", "rpaAnalyst", "level2", "Analysis", "Automation assessment", "Assess feasibility, complexity, stability, volume, benefits, and operational risk."),
       skill("rpa-l2-2", "rpaAnalyst", "level2", "Requirements", "PDD creation", "Create process definition documents with clear rules, exceptions, and test cases."),
       skill("rpa-l2-3", "rpaAnalyst", "level2", "Testing", "Bot acceptance testing", "Validate automated processes using business scenarios, exceptions, and evidence."),
-      skill("rpa-l2-4", "rpaAnalyst", "level2", "Change", "Operational handover", "Prepare support, monitoring, controls, and handover material for live automations."),
       skill("rpa-l3-1", "rpaAnalyst", "level3", "Optimisation", "Process improvement", "Improve processes before automation to remove waste, variation, and failure points."),
       skill("rpa-l3-2", "rpaAnalyst", "level3", "Governance", "Automation governance", "Apply governance for prioritisation, security, compliance, reuse, and supportability."),
-      skill("rpa-l3-3", "rpaAnalyst", "level3", "Benefits", "Benefits tracking", "Measure time saved, quality improvements, risk reduction, and adoption outcomes."),
-      skill("rpa-l3-4", "rpaAnalyst", "level3", "Stakeholders", "Automation storytelling", "Explain automation options, constraints, and value to business stakeholders.")
+      skill("rpa-l3-3", "rpaAnalyst", "level3", "Benefits", "Benefits tracking", "Measure time saved, quality improvements, risk reduction, and adoption outcomes.")
     ]
   },
   devopsEngineer: {
@@ -184,6 +181,8 @@ var ROLES = {
       skill("do-l2-2", "devopsEngineer", "level2", "Containers", "Docker images", "Build and run containers with clear configuration and logs."),
       skill("do-l2-3", "devopsEngineer", "level2", "Observability", "Logging and metrics", "Use logs and basic metrics to understand service behaviour."),
       skill("do-l2-4", "devopsEngineer", "level2", "Security", "Secrets handling", "Store and pass secrets without exposing them in code or logs."),
+      skill("do-l2-5", "devopsEngineer", "level2", "Monitoring", "Infrastructure Monitoring", "Configure dashboards and alerts to detect environment issues before they affect users."),
+      skill("do-l2-6", "devopsEngineer", "level2", "Networking", "Networking Security", "Configure VPCs, Security Groups, and Subnets to protect cloud resources."),
       skill("do-l3-1", "devopsEngineer", "level3", "Reliability", "Incident response", "Triage incidents, communicate status, and capture follow-up actions."),
       skill("do-l3-2", "devopsEngineer", "level3", "Platform", "Deployment strategy", "Choose safe deployment patterns such as blue-green or canary releases."),
       skill("do-l3-3", "devopsEngineer", "level3", "Architecture", "Scalable environments", "Design repeatable environments that support teams without manual drift."),

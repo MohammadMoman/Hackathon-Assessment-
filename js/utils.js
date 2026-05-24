@@ -101,6 +101,12 @@ function getComment(consultantId, skillId) {
   return appData.comments?.[consultantId]?.[skillId] || "";
 }
 
+function isTargetOverdue(deadline) {
+  if (!deadline) return false;
+  const today = new Date().toISOString().slice(0, 10);
+  return deadline < today;
+}
+
 function hasPendingVerifications(consultantId) {
   const person = getConsultant(consultantId);
   if (!person || !person.roleId || !ROLES[person.roleId]) return false;
@@ -120,10 +126,24 @@ function getConsultantStats(consultantId, roleId) {
     return { complete: 0, inProgress: 0, notStarted: 0, targetCount: 0, progressPercent: 0 };
   }
   const skills = getRoleSkills(effectiveRoleId);
-  const statuses = skills.map(item => getStatus(consultantId, item.id));
-  const complete = statuses.filter(status => status === "complete").length;
-  const inProgress = statuses.filter(status => status === "in-progress").length;
-  const notStarted = statuses.filter(status => status === "not-started").length;
+
+  let complete = 0;
+  let inProgress = 0;
+  let notStarted = 0;
+
+  skills.forEach(item => {
+    const status = getStatus(consultantId, item.id);
+    const verification = getVerificationStatus(consultantId, item.id);
+    
+    if (status === "complete" && verification === "verified") {
+      complete++;
+    } else if (status === "in-progress" || (status === "complete" && verification !== "verified")) {
+      inProgress++;
+    } else {
+      notStarted++;
+    }
+  });
+
   const targetCount = Object.keys(appData.targets[consultantId] || {}).length;
   return {
     complete,
@@ -139,12 +159,13 @@ function getTotalSkillCount() {
 }
 
 function getTeamStats() {
-  if (CONSULTANTS.length === 0) return { averageProgress: 0, targetCount: 0, pendingVerificationCount: 0 };
+  if (CONSULTANTS.length === 0) return { averageProgress: 0, targetCount: 0, pendingVerificationCount: 0, overdueTargetCount: 0 };
   const stats = CONSULTANTS.map(person => getConsultantStats(person.id));
   const averageProgress = Math.round(stats.reduce((sum, item) => sum + item.progressPercent, 0) / stats.length);
   const targetCount = stats.reduce((sum, item) => sum + item.targetCount, 0);
 
   let pendingVerificationCount = 0;
+  let overdueTargetCount = 0;
   CONSULTANTS.forEach(person => {
     if (!person.roleId || !ROLES[person.roleId]) return;
     getRoleSkills(person.roleId).forEach(skill => {
@@ -152,9 +173,14 @@ function getTeamStats() {
         pendingVerificationCount++;
       }
     });
+
+    const targets = appData.targets[person.id] || {};
+    Object.values(targets).forEach(t => {
+      if (isTargetOverdue(t.deadline)) overdueTargetCount++;
+    });
   });
 
-  return { averageProgress, targetCount, pendingVerificationCount };
+  return { averageProgress, targetCount, pendingVerificationCount, overdueTargetCount };
 }
 
 function getSkillRanking(status) {
